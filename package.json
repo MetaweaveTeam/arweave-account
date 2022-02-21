@@ -1,8 +1,9 @@
 {
   "name": "arweave-account",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Account protocol library on Arweave by Metaweave.xyz",
-  "main": "index.js",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "files": ["lib/**/*"],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
