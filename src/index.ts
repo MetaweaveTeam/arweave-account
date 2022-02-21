@@ -1,5 +1,9 @@
 export class Account {
   constructor() {
-    return 'Hello from arweave-account lib';
+    
+  }
+
+  getSomething(): string {
+    return "hello from arweave-account";
   }
 }
