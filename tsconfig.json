@@ -1,6 +1,12 @@
 {
   "compilerOptions": {
     "target": "es5",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "skipLibCheck": true,
     "module": "commonjs",
     "declaration": true,
     "outDir": "./lib",
