@@ -1,10 +1,11 @@
 import Arweave from 'arweave';
 import ArDB from 'ardb';
+import { T_jwk } from './types';
 
 export default class Account {
   private arweave: Arweave;
   private ardb: ArDB;
-  
+
   constructor() {
     this.arweave = Arweave.init({
       host: 'arweave.net',// Hostname or IP address for a Arweave host
@@ -16,7 +17,7 @@ export default class Account {
     this.ardb = new ArDB(this.arweave);
   }
 
-  getSomething(jwk: string): string {
+  get(jwk: T_jwk): T_jwk {
     return "hello from arweave-account";
   }
 }
