@@ -28,6 +28,17 @@ export default class Account {
     const data = tx[0]?.id 
       ? await this.arweave.transactions.getData(tx[0].id, { decode: true, string: true })
       : null;
-    return typeof data === "string" ? JSON.parse(data) : null;
+
+    if(typeof data === "string"){
+      let profile = JSON.parse(data);
+      profile ={
+        ...profile,
+        handle: `${profile.username}#${jwk.slice(0,3)}${jwk.slice(jwk.length-3)}`,
+        jwk: jwk
+      } 
+      return profile;
+    }
+    else
+      return null;
   }
 }
