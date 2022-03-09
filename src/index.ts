@@ -21,7 +21,7 @@ export default class Account {
 
   async get(jwk: T_jwk): Promise<any | null> {
     const tx: transaction[] | block[] = await this.ardb.search('transactions')
-    .tag('Protocol-Name', 'profile-0.1')
+    .tag('Protocol-Name', 'Account-0.1')
     .from(jwk)
     .limit(1).find();
   
@@ -35,10 +35,17 @@ export default class Account {
         ...profile,
         handle: `${profile.username}#${jwk.slice(0,3)}${jwk.slice(jwk.length-3)}`,
         jwk: jwk
-      } 
-      return profile;
+      }
+      return {
+        txid: tx[0].id,
+        profile
+      }
     }
-    else
-      return null;
+    else{
+      return {
+        txid: null,
+        profile: null
+      }
+    }
   }
 }
