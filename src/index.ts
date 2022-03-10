@@ -1,6 +1,6 @@
 import Arweave from 'arweave';
 import ArDB from 'ardb';
-import { T_jwk } from './types';
+import { T_addr } from './types';
 import transaction from 'ardb/lib/models/transaction';
 import block from 'ardb/lib/models/block';
 
@@ -19,10 +19,10 @@ export default class Account {
     this.ardb = new ArDB(this.arweave);
   }
 
-  async get(jwk: T_jwk): Promise<any | null> {
+  async get(addr: T_addr): Promise<any | null> {
     const tx: transaction[] | block[] = await this.ardb.search('transactions')
-    .tag('Protocol-Name', 'Account-0.1')
-    .from(jwk)
+    .tag('Protocol-Name', 'Account-0.2')
+    .from(addr)
     .limit(1).find();
   
     const data = tx[0]?.id 
@@ -33,8 +33,8 @@ export default class Account {
       let profile = JSON.parse(data);
       profile ={
         ...profile,
-        handle: `${profile.username}#${jwk.slice(0,3)}${jwk.slice(jwk.length-3)}`,
-        jwk: jwk
+        handle: `${profile.handle}#${addr.slice(0,3)}${addr.slice(addr.length-3)}`,
+        addr: addr
       }
       return {
         txid: tx[0].id,
