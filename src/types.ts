@@ -4,7 +4,6 @@ type T_txid = string;
 type T_profile = {
   addr: T_addr,
   handle: string,
-  username: string,
   name: string,
   bio: string,
   links: {
@@ -13,7 +12,12 @@ type T_profile = {
     github?: string,
     facebook?: string
   },
-  image: T_txid
+  avatar: T_txid
 }
 
-export type {T_addr, T_txid, T_profile}
+type T_account = {
+  txid: T_txid,
+  profile: T_profile
+}
+
+export type {T_addr, T_txid, T_profile, T_account}

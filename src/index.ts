@@ -1,6 +1,6 @@
 import Arweave from 'arweave';
 import ArDB from 'ardb';
-import { T_addr } from './types';
+import { T_account, T_addr, T_profile, T_txid } from './types';
 import transaction from 'ardb/lib/models/transaction';
 import block from 'ardb/lib/models/block';
 
@@ -47,5 +47,35 @@ export default class Account {
         profile: null
       }
     }
+  }
+
+  async search(handle: string): Promise<any | null> {
+    const txs: transaction[] | block[] = await this.ardb.search('transactions')
+    .tag('Protocol-Name', 'Account-0.2')
+    .tag('handle', handle)
+    .limit(100).find();
+
+    const formattedAccounts = txs.map(async tx => {
+      const txid: T_txid = tx.id;
+      const data = await this.arweave.transactions.getData(txid, { decode: true, string: true });
+      const addr = 'owner' in tx ? tx.owner.address : 'anonymous';
+      if(typeof data === "string"){
+        let profile: T_profile = JSON.parse(data);
+        profile = {
+          ...profile,
+          handle: `${profile.handle}#${addr.slice(0,3)}${addr.slice(addr.length-3)}`,
+          addr: addr
+        }
+        return {
+          txid: txid,
+          profile
+        }
+      }
+    });
+
+    const accounts = await Promise.all(formattedAccounts);
+
+    // remove address duplicates: https://stackoverflow.com/a/56757215
+    return accounts.filter((v,i,a)=>a.findIndex(t =>(t?.profile.addr===v?.profile.addr))===i);
   }
 }
