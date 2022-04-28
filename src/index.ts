@@ -78,4 +78,43 @@ export default class Account {
     // remove address duplicates: https://stackoverflow.com/a/56757215
     return accounts.filter((v,i,a)=>a.findIndex(t =>(t?.profile.addr===v?.profile.addr))===i);
   }
+  
+  async find(uniqueHandle: string): Promise<any | null> {
+    uniqueHandle = uniqueHandle.trim();
+    // check if format is handle#xxxxxx
+    if(!/^(.+)#[a-zA-Z0-9\-\_]{6}$/.test(uniqueHandle))
+      return null;
+
+    const txs: transaction[] | block[] = await this.ardb.search('transactions')
+    .tag('Protocol-Name', 'Account-0.2')
+    .tag('handle', uniqueHandle.slice(0,-7))
+    .limit(100).find();
+
+    const formattedAccounts = txs.map(async tx => {
+      const txid: T_txid = tx.id;
+      const data = await this.arweave.transactions.getData(txid, { decode: true, string: true });
+      const addr = 'owner' in tx ? tx.owner.address : 'anonymous';
+      if(typeof data === "string"){
+        let profile: T_profile = JSON.parse(data);
+        if(profile.handle+'#'+addr.slice(0,3)+addr.slice(addr.length-3) === uniqueHandle){
+          profile = {
+            ...profile,
+            handle: `${profile.handle}#${addr.slice(0,3)}${addr.slice(addr.length-3)}`,
+            addr: addr
+          }
+          return {
+            txid: txid,
+            profile
+          }
+        }
+        else return null;
+      }
+      else return null;
+    });
+
+    let accounts = await Promise.all(formattedAccounts);
+    accounts = accounts.filter(e => e !== null);
+
+    return accounts.length > 0 ? accounts[0] : null;
+  }
 }
