@@ -23,7 +23,18 @@ __Get user profile by wallet address__
 await account.get(walletAddr);
 ```
 
-__Get user profile by handle name__
+__Search user profile by handle name__
 ```
 await account.search(handle);
+```
+
+__Find user profile by wallet address & handle name__
+```
+await account.find(handle#uniqID);
+```
+
+## typescript imports
+
+```
+import { T_addr, T_txid, T_profile, T_account } from 'arweave-account/lib/types';
 ```
