@@ -20,4 +20,9 @@ type T_account = {
   profile: T_profile
 }
 
-export type {T_addr, T_txid, T_profile, T_account}
+type T_item = {
+  timestamp: number,
+  account: T_account
+}
+
+export type {T_addr, T_txid, T_profile, T_account, T_item}
