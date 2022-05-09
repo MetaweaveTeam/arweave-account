@@ -1,4 +1,3 @@
-import Account from ".";
 import { T_item, T_account, T_addr } from "./types";
 
 /*
@@ -28,7 +27,7 @@ export default class LSCache {
     const cache = JSON.parse(localStorage.getItem('arweave-account'));
 
     return cache.find((record: T_item) => 
-      record.account.profile.addr === addr &&
+      record.addr === addr &&
       Date.now() < record.timestamp + this.expirationTime
     )?.account;
   }
@@ -39,7 +38,7 @@ export default class LSCache {
     const cache = JSON.parse(localStorage.getItem('arweave-account'));
 
     return cache.find((record: T_item) => 
-      record.account.profile.handle === handle &&
+      record.account?.profile.handle === handle &&
       Date.now() < record.timestamp + this.expirationTime
     )?.account;
   }
@@ -47,17 +46,18 @@ export default class LSCache {
   /*
    *  add or update an account timestamp
    */
-  hydrate(account: T_account): void {
+  hydrate(addr: T_addr, account?: T_account): void {
     const item: T_item = {
       timestamp: Date.now(),
-      account: account 
+      addr: addr,
+      account: account ? account : null
     }
 
     // @ts-ignore localStorage is initialized in constructor
     const cache = JSON.parse(localStorage.getItem('arweave-account'));
 
     const itemIndex = cache.findIndex((record: T_item) =>
-      record.account.profile.addr === item.account.profile.addr
+      record.addr === item.addr
     );
 
     // hydrate account data

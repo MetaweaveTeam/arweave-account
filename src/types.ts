@@ -22,7 +22,8 @@ type T_account = {
 
 type T_item = {
   timestamp: number,
-  account: T_account
+  addr: T_addr,
+  account: T_account | null
 }
 
 export type {T_addr, T_txid, T_profile, T_account, T_item}

@@ -13,7 +13,7 @@ export default class Account {
   constructor({
     cache = true,
     cacheSize = 100,
-    cacheTime = 30000,
+    cacheTime = 60000,
     gateway = {
       host: 'arweave.net',// Hostname or IP address for a Arweave host
       port: 443,          // Port
@@ -54,10 +54,11 @@ export default class Account {
           profile
         };
 
-        this.cache.hydrate(account);
+        this.cache.hydrate(addr, account);
         return account;
       }
       else{
+        this.cache.hydrate(addr);
         return null;
       }
     }
@@ -94,7 +95,7 @@ export default class Account {
       (v,i,a): v is T_account => 
       v !== null &&
       // remove address duplicates: https://stackoverflow.com/a/56757215
-      a.findIndex(t =>(t?.profile.addr===v?.profile.addr)) === i
+      a.findIndex(t => (t?.profile.addr===v?.profile.addr)) === i
     );
   }
   
@@ -135,12 +136,11 @@ export default class Account {
         else return null;
       });
 
-      let accounts = await Promise.all(formattedAccounts);
-      accounts = accounts.filter(e => e !== null);
+      const a = await Promise.all(formattedAccounts);
+      const accounts = a.filter((e): e is T_account => e !== null);
 
       if(accounts.length > 0){
-        // @ts-ignore null values are filtered out
-        this.cache.hydrate(accounts[0]);
+        this.cache.hydrate(accounts[0].profile.addr, accounts[0]);
         return accounts[0];
       }
       else
