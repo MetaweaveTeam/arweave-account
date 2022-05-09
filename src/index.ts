@@ -63,7 +63,7 @@ export default class Account {
     }
   }
 
-  async search(handle: string): Promise<(T_account | undefined)[]> {
+  async search(handle: string): Promise<T_account[]> {
     const txs: transaction[] | block[] = await this.ardb.search('transactions')
     .tag('Protocol-Name', 'Account-0.2')
     .tag('handle', handle)
@@ -83,14 +83,19 @@ export default class Account {
         return {
           txid: txid,
           profile
-        }
+        } as T_account
       }
+      else return null
     });
 
     const accounts = await Promise.all(formattedAccounts);
 
-    // remove address duplicates: https://stackoverflow.com/a/56757215
-    return accounts.filter((v,i,a)=>a.findIndex(t =>(t?.profile.addr===v?.profile.addr))===i);
+    return accounts.filter(
+      (v,i,a): v is T_account => 
+      v !== null &&
+      // remove address duplicates: https://stackoverflow.com/a/56757215
+      a.findIndex(t =>(t?.profile.addr===v?.profile.addr)) === i
+    );
   }
   
   async find(uniqueHandle: string): Promise<T_account | null> {
