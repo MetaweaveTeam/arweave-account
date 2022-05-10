@@ -30,23 +30,23 @@ export default class Account {
   async get(addr: T_addr): Promise<T_account | null> {
     addr = addr.trim();
     let cacheResponse;
-    if(cacheResponse = this.cache.get(addr))
+    if (cacheResponse = this.cache.get(addr))
       return cacheResponse;
     else {
       const tx: transaction[] | block[] = await this.ardb.search('transactions')
-      .tag('Protocol-Name', 'Account-0.2')
-      .from(addr)
-      .limit(1).find();
-      
-      const data = tx[0]?.id 
-      ? await this.arweave.transactions.getData(tx[0].id, { decode: true, string: true })
-      : null;
-      
-      if(typeof data === "string"){
+        .tag('Protocol-Name', 'Account-0.2')
+        .from(addr)
+        .limit(1).find();
+
+      const data = tx[0]?.id
+        ? await this.arweave.transactions.getData(tx[0].id, { decode: true, string: true })
+        : null;
+
+      if (typeof data === "string") {
         let profile = JSON.parse(data);
         profile = {
           ...profile,
-          handle: `${profile.handle}#${addr.slice(0,3)}${addr.slice(addr.length-3)}`,
+          handle: `${profile.handle}#${addr.slice(0, 3)}${addr.slice(addr.length - 3)}`,
           addr: addr
         }
         const account = {
@@ -57,7 +57,7 @@ export default class Account {
         this.cache.hydrate(addr, account);
         return account;
       }
-      else{
+      else {
         this.cache.hydrate(addr);
         return null;
       }
@@ -66,80 +66,71 @@ export default class Account {
 
   async search(handle: string): Promise<T_account[]> {
     const txs: transaction[] | block[] = await this.ardb.search('transactions')
-    .tag('Protocol-Name', 'Account-0.2')
-    .tag('handle', handle)
-    .limit(100).find();
+      .tag('Protocol-Name', 'Account-0.2')
+      .tag('handle', handle)
+      .limit(100).find();
 
     const formattedAccounts = txs.map(async tx => {
       const txid: T_txid = tx.id;
-      const data = await this.arweave.transactions.getData(txid, { decode: true, string: true });
-      const addr = 'owner' in tx ? tx.owner.address : 'anonymous';
-      if(typeof data === "string"){
-        let profile: T_profile = JSON.parse(data);
-        profile = {
-          ...profile,
-          handle: `${profile.handle}#${addr.slice(0,3)}${addr.slice(addr.length-3)}`,
-          addr: addr
-        }
-        return {
-          txid: txid,
-          profile
-        } as T_account
+      // @ts-ignore
+      let profile = (await this.arweave.api.get(txid).catch(() => { data: null })).data;
+      let addr = profile.addr ? profile.addr : tx.owner.address
+      profile = {
+        ...profile,
+        addr,
+        handle: `${profile.handle}#${addr.slice(0, 3)}${addr.slice(addr.length - 3)}`
       }
-      else return null
+      return {
+        txid: txid,
+        profile
+      }
     });
 
     const accounts = await Promise.all(formattedAccounts);
 
     return accounts.filter(
-      (v,i,a): v is T_account => 
-      v !== null &&
-      // remove address duplicates: https://stackoverflow.com/a/56757215
-      a.findIndex(t => (t?.profile.addr===v?.profile.addr)) === i
+      (v, i, a): v is T_account =>
+        v !== null &&
+        // remove address duplicates: https://stackoverflow.com/a/56757215
+        a.findIndex(t => (t?.profile.addr === v?.profile.addr)) === i
     );
   }
-  
+
   async find(uniqueHandle: string): Promise<T_account | null> {
     let cacheResponse;
     uniqueHandle = uniqueHandle.trim();
     // check if format is handle#xxxxxx
-    if(!/^(.+)#[a-zA-Z0-9\-\_]{6}$/.test(uniqueHandle))
+    if (!/^(.+)#[a-zA-Z0-9\-\_]{6}$/.test(uniqueHandle))
       return null;
-    
-    if(cacheResponse = this.cache.find(uniqueHandle))
+
+    if (cacheResponse = this.cache.find(uniqueHandle))
       return cacheResponse;
     else {
       const txs: transaction[] | block[] = await this.ardb.search('transactions')
-      .tag('Protocol-Name', 'Account-0.2')
-      .tag('handle', uniqueHandle.slice(0,-7))
-      .limit(100).find();
+        .tag('Protocol-Name', 'Account-0.2')
+        .tag('handle', uniqueHandle.slice(0, -7))
+        .limit(100).find();
 
       const formattedAccounts = txs.map(async tx => {
         const txid: T_txid = tx.id;
-        const data = await this.arweave.transactions.getData(txid, { decode: true, string: true });
-        const addr = 'owner' in tx ? tx.owner.address : 'anonymous';
-        if(typeof data === "string"){
-          let profile: T_profile = JSON.parse(data);
-          if(profile.handle+'#'+addr.slice(0,3)+addr.slice(addr.length-3) === uniqueHandle){
-            profile = {
-              ...profile,
-              handle: `${profile.handle}#${addr.slice(0,3)}${addr.slice(addr.length-3)}`,
-              addr: addr
-            }
-            return {
-              txid: txid,
-              profile
-            }
-          }
-          else return null;
+        // @ts-ignore
+        let profile = (await this.arweave.api.get(txid).catch(() => { data: null })).data;
+        let addr = profile.addr ? profile.addr : tx.owner.address
+        profile = {
+          ...profile,
+          addr,
+          handle: `${profile.handle}#${addr.slice(0, 3)}${addr.slice(addr.length - 3)}`
         }
-        else return null;
+        return {
+          txid: txid,
+          profile
+        }
       });
 
       const a = await Promise.all(formattedAccounts);
       const accounts = a.filter((e): e is T_account => e !== null);
 
-      if(accounts.length > 0){
+      if (accounts.length > 0) {
         this.cache.hydrate(accounts[0].profile.addr, accounts[0]);
         return accounts[0];
       }
