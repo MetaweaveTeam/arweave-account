@@ -15,12 +15,12 @@ export default class Account {
     cacheSize = 100,
     cacheTime = 60000,
     gateway = {
-      host: 'arweave.net',// Hostname or IP address for a Arweave host
-      port: 443,          // Port
-      protocol: 'https',  // Network protocol http or https
-      timeout: 20000,     // Network request timeouts in milliseconds
+      host: 'arweave.net', // Hostname or IP address for a Arweave host
+      port: 443, // Port
+      protocol: 'https', // Network protocol http or https
+      timeout: 20000, // Network request timeouts in milliseconds
       logging: false,
-    }
+    },
   } = {}) {
     this.arweave = Arweave.init(gateway);
     this.ardb = new ArDB(this.arweave);
@@ -30,34 +30,32 @@ export default class Account {
   async get(addr: T_addr): Promise<T_account | null> {
     addr = addr.trim();
     let cacheResponse;
-    if (cacheResponse = this.cache.get(addr))
-      return cacheResponse;
+    if ((cacheResponse = this.cache.get(addr))) return cacheResponse;
     else {
-      const tx: transaction[] | block[] = await this.ardb.search('transactions')
+      const tx: transaction[] | block[] = await this.ardb
+        .search('transactions')
         .tag('Protocol-Name', 'Account-0.2')
         .from(addr)
-        .limit(1).find();
+        .limit(1)
+        .find();
 
-      const data = tx[0]?.id
-        ? await this.arweave.transactions.getData(tx[0].id, { decode: true, string: true })
-        : null;
+      const data = tx[0]?.id ? await this.arweave.transactions.getData(tx[0].id, { decode: true, string: true }) : null;
 
-      if (typeof data === "string") {
+      if (typeof data === 'string') {
         let profile = JSON.parse(data);
         profile = {
           ...profile,
           handle: `${profile.handle}#${addr.slice(0, 3)}${addr.slice(addr.length - 3)}`,
-          addr: addr
-        }
+          addr: addr,
+        };
         const account = {
           txid: tx[0].id,
-          profile
+          profile,
         };
 
         this.cache.hydrate(addr, account);
         return account;
-      }
-      else {
+      } else {
         this.cache.hydrate(addr);
         return null;
       }
@@ -65,25 +63,31 @@ export default class Account {
   }
 
   async search(handle: string): Promise<T_account[]> {
-    const txs: transaction[] | block[] = await this.ardb.search('transactions')
+    const txs: transaction[] | block[] = await this.ardb
+      .search('transactions')
       .tag('Protocol-Name', 'Account-0.2')
       .tag('handle', handle)
-      .limit(100).find();
+      .limit(100)
+      .find();
 
-    const formattedAccounts = txs.map(async tx => {
+    const formattedAccounts = txs.map(async (tx) => {
       const txid: T_txid = tx.id;
       // @ts-ignore
-      let profile = (await this.arweave.api.get(txid).catch(() => { data: null })).data;
-      let addr = profile.addr ? profile.addr : tx.owner.address
+      let profile = (
+        await this.arweave.api.get(txid).catch(() => {
+          data: null;
+        })
+      ).data;
+      let addr = profile.addr ? profile.addr : tx.owner.address;
       profile = {
         ...profile,
         addr,
-        handle: `${profile.handle}#${addr.slice(0, 3)}${addr.slice(addr.length - 3)}`
-      }
+        handle: `${profile.handle}#${addr.slice(0, 3)}${addr.slice(addr.length - 3)}`,
+      };
       return {
         txid: txid,
-        profile
-      }
+        profile,
+      };
     });
 
     const accounts = await Promise.all(formattedAccounts);
@@ -92,7 +96,7 @@ export default class Account {
       (v, i, a): v is T_account =>
         v !== null &&
         // remove address duplicates: https://stackoverflow.com/a/56757215
-        a.findIndex(t => (t?.profile.addr === v?.profile.addr)) === i
+        a.findIndex((t) => t?.profile.addr === v?.profile.addr) === i,
     );
   }
 
@@ -100,31 +104,35 @@ export default class Account {
     let cacheResponse;
     uniqueHandle = uniqueHandle.trim();
     // check if format is handle#xxxxxx
-    if (!/^(.+)#[a-zA-Z0-9\-\_]{6}$/.test(uniqueHandle))
-      return null;
+    if (!/^(.+)#[a-zA-Z0-9\-\_]{6}$/.test(uniqueHandle)) return null;
 
-    if (cacheResponse = this.cache.find(uniqueHandle))
-      return cacheResponse;
+    if ((cacheResponse = this.cache.find(uniqueHandle))) return cacheResponse;
     else {
-      const txs: transaction[] | block[] = await this.ardb.search('transactions')
+      const txs: transaction[] | block[] = await this.ardb
+        .search('transactions')
         .tag('Protocol-Name', 'Account-0.2')
         .tag('handle', uniqueHandle.slice(0, -7))
-        .limit(100).find();
+        .limit(100)
+        .find();
 
-      const formattedAccounts = txs.map(async tx => {
+      const formattedAccounts = txs.map(async (tx) => {
         const txid: T_txid = tx.id;
         // @ts-ignore
-        let profile = (await this.arweave.api.get(txid).catch(() => { data: null })).data;
-        let addr = profile.addr ? profile.addr : tx.owner.address
+        let profile = (
+          await this.arweave.api.get(txid).catch(() => {
+            data: null;
+          })
+        ).data;
+        let addr = profile.addr ? profile.addr : tx.owner.address;
         profile = {
           ...profile,
           addr,
-          handle: `${profile.handle}#${addr.slice(0, 3)}${addr.slice(addr.length - 3)}`
-        }
+          handle: `${profile.handle}#${addr.slice(0, 3)}${addr.slice(addr.length - 3)}`,
+        };
         return {
           txid: txid,
-          profile
-        }
+          profile,
+        };
       });
 
       const a = await Promise.all(formattedAccounts);
@@ -133,9 +141,7 @@ export default class Account {
       if (accounts.length > 0) {
         this.cache.hydrate(accounts[0].profile.addr, accounts[0]);
         return accounts[0];
-      }
-      else
-        return null;
+      } else return null;
     }
   }
 
