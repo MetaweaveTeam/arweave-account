@@ -72,13 +72,12 @@ export default class Account {
 
     const formattedAccounts = txs.map(async (tx) => {
       const txid: T_txid = tx.id;
-      // @ts-ignore
       let profile = (
         await this.arweave.api.get(txid).catch(() => {
-          data: null;
+          return { data: null };
         })
       ).data;
-      let addr = profile.addr ? profile.addr : tx.owner.address;
+      const addr = 'owner' in tx ? tx.owner.address : 'anonymous';
       profile = {
         ...profile,
         addr,
@@ -87,7 +86,7 @@ export default class Account {
       return {
         txid: txid,
         profile,
-      };
+      } as T_account;
     });
 
     const accounts = await Promise.all(formattedAccounts);
@@ -117,13 +116,12 @@ export default class Account {
 
       const formattedAccounts = txs.map(async (tx) => {
         const txid: T_txid = tx.id;
-        // @ts-ignore
         let profile = (
           await this.arweave.api.get(txid).catch(() => {
-            data: null;
+            return { data: null };
           })
         ).data;
-        let addr = profile.addr ? profile.addr : tx.owner.address;
+        const addr = 'owner' in tx ? tx.owner.address : 'anonymous';
         profile = {
           ...profile,
           addr,
@@ -132,7 +130,7 @@ export default class Account {
         return {
           txid: txid,
           profile,
-        };
+        } as T_account;
       });
 
       const a = await Promise.all(formattedAccounts);
