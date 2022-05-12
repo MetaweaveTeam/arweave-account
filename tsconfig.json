@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es2015",
     "skipLibCheck": true,
     "module": "commonjs",
     "declaration": true,
@@ -10,6 +10,12 @@
     "noImplicitUseStrict": true,
     "alwaysStrict": false
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "**/__tests__/*", "lib"]
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/__tests__/*",
+    "lib"
+  ]
 }
