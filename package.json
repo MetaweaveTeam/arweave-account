@@ -1,6 +1,6 @@
 {
   "name": "arweave-account",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Account protocol library on Arweave by Metaweave.xyz",
   "type": "commonjs",
   "main": "lib/index.js",
