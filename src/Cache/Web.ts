@@ -1,10 +1,7 @@
-import { T_item, T_account, T_addr } from './types';
+import { T_item, T_account, T_addr } from '../types';
+import Cache from './CacheAPI';
 
-/*
- *  LSCache: LocalStorage Cache
- */
-
-export default class LSCache {
+export default class LocalStorage implements Cache {
   private isActivated: boolean;
   private expirationTime: number;
   private size: number;
@@ -28,14 +25,14 @@ export default class LSCache {
       ?.account;
   }
 
-  find(handle: string): T_account | undefined {
+  find(uniqueHandle: string): T_account | undefined {
     if (!this.isActivated) return undefined;
     // @ts-ignore localStorage is initialized in constructor
     const cache = JSON.parse(localStorage.getItem('arweave-account'));
 
     return cache.find(
       (record: T_item) =>
-        record.account?.profile.handle === handle && Date.now() < record.timestamp + this.expirationTime,
+        record.account?.profile.handle === uniqueHandle && Date.now() < record.timestamp + this.expirationTime,
     )?.account;
   }
 

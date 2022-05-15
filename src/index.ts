@@ -1,17 +1,17 @@
 import Arweave from 'arweave';
 import ArDB from 'ardb';
-import { T_account, T_addr, T_profile, T_txid } from './types';
+import { T_account, T_addr, T_txid } from './types';
 import transaction from 'ardb/lib/models/transaction';
 import block from 'ardb/lib/models/block';
-import LSCache from './LSCache';
+import Cache from './Cache';
 
 export default class Account {
   private arweave: Arweave;
   private ardb: ArDB;
-  private cache: LSCache;
+  private cache: Cache | null;
 
   constructor({
-    cache = true,
+    cacheIsActivated = true,
     cacheSize = 100,
     cacheTime = 60000,
     gateway = {
@@ -24,13 +24,22 @@ export default class Account {
   } = {}) {
     this.arweave = Arweave.init(gateway);
     this.ardb = new ArDB(this.arweave);
-    this.cache = new LSCache(cache, cacheSize, cacheTime);
+
+    if(cacheIsActivated){
+      if(window) {
+        this.cache = new Cache("web", cacheSize, cacheTime);
+        console.log("this.cache", this.cache);
+      }
+      else this.cache = new Cache("node", cacheSize, cacheTime);
+    }
+    else
+      this.cache = null;
   }
 
   async get(addr: T_addr): Promise<T_account | null> {
     addr = addr.trim();
     let cacheResponse;
-    if ((cacheResponse = this.cache.get(addr))) return cacheResponse;
+    if ((cacheResponse = this.cache?.get(addr))) return cacheResponse;
     else {
       const tx: transaction[] | block[] = await this.ardb
         .search('transactions')
@@ -53,10 +62,10 @@ export default class Account {
           profile,
         };
 
-        this.cache.hydrate(addr, account);
+        this.cache?.hydrate(addr, account);
         return account;
       } else {
-        this.cache.hydrate(addr);
+        this.cache?.hydrate(addr);
         return null;
       }
     }
@@ -105,7 +114,7 @@ export default class Account {
     // check if format is handle#xxxxxx
     if (!/^(.+)#[a-zA-Z0-9\-\_]{6}$/.test(uniqueHandle)) return null;
 
-    if ((cacheResponse = this.cache.find(uniqueHandle))) return cacheResponse;
+    if ((cacheResponse = this.cache?.find(uniqueHandle))) return cacheResponse;
     else {
       const txs: transaction[] | block[] = await this.ardb
         .search('transactions')
@@ -137,13 +146,9 @@ export default class Account {
       const accounts = a.filter((e): e is T_account => e !== null);
 
       if (accounts.length > 0) {
-        this.cache.hydrate(accounts[0].profile.addr, accounts[0]);
+        this.cache?.hydrate(accounts[0].profile.addr, accounts[0]);
         return accounts[0];
       } else return null;
     }
-  }
-
-  clearCache(): void {
-    this.cache.reset();
   }
 }
