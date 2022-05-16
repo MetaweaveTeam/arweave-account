@@ -12,12 +12,16 @@ export default class Memory implements CacheAPI {
   };
 
   get(addr: T_addr) {
-    let account;
-    return (account = this.store.get(addr)?.account) ? account : undefined;
+    return this.store.get(addr)?.account;
   };
 
   find(uniqueHandle: string) {
-    return undefined;
+    console.log("Node.find()")
+    for(const [addr, item] of this.store){
+      const handle = item.account?.profile.handle;
+      if(uniqueHandle === `${handle}#${addr.slice(0, 3)}${addr.slice(addr.length - 3)}`)
+        return item.account;
+    }
   };
 
   hydrate(addr: T_addr, account?: T_account) {

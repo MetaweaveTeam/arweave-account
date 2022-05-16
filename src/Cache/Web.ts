@@ -12,17 +12,18 @@ export default class LocalStorage implements Cache {
     if (!localStorage.getItem('arweave-account')) localStorage.setItem('arweave-account', '[]');
   }
 
-  get(addr: T_addr): T_account | undefined {
+  get(addr: T_addr) {
     // @ts-ignore localStorage is initialized in constructor
-    const cache = JSON.parse(localStorage.getItem('arweave-account'));
+    const cache: T_item[] = JSON.parse(localStorage.getItem('arweave-account'));
 
-    return cache.find((record: T_item) => record.addr === addr && Date.now() < record.timestamp + this.expirationTime)
+    return cache.find(
+      (item: T_item) => item.addr === addr && Date.now() < item.timestamp + this.expirationTime)
       ?.account;
   }
 
-  find(uniqueHandle: string): T_account | undefined {
+  find(uniqueHandle: string) {
     // @ts-ignore localStorage is initialized in constructor
-    const cache = JSON.parse(localStorage.getItem('arweave-account'));
+    const cache: T_item[] = JSON.parse(localStorage.getItem('arweave-account'));
 
     return cache.find(
       (record: T_item) =>
