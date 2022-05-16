@@ -131,19 +131,22 @@ export default class Account {
           })
         ).data;
         const addr = 'owner' in tx ? tx.owner.address : 'anonymous';
-        profile = {
-          ...profile,
-          addr,
-          handle: `${profile.handle}#${addr.slice(0, 3)}${addr.slice(addr.length - 3)}`,
-        };
-        return {
-          txid: txid,
-          profile,
-        } as T_account;
+
+        if(uniqueHandle === `${profile.handle}#${addr.slice(0, 3)}${addr.slice(addr.length - 3)}`){
+          profile = {
+            ...profile,
+            addr,
+            handle: `${profile.handle}#${addr.slice(0, 3)}${addr.slice(addr.length - 3)}`,
+          };
+          return {
+            txid: txid,
+            profile,
+          } as T_account;
+        }
       });
 
       const a = await Promise.all(formattedAccounts);
-      const accounts = a.filter((e): e is T_account => e !== null);
+      const accounts = a.filter((e): e is T_account => e !== undefined);
 
       if (accounts.length > 0) {
         this.cache?.hydrate(accounts[0].profile.addr, accounts[0]);
