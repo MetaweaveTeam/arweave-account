@@ -26,7 +26,7 @@ export default class Account {
     this.ardb = new ArDB(this.arweave);
 
     if(cacheIsActivated){
-      if(window) {
+      if(typeof window !== 'undefined') {
         this.cache = new Cache("web", cacheSize, cacheTime);
         console.log("this.cache", this.cache);
       }
@@ -149,6 +149,17 @@ export default class Account {
         this.cache?.hydrate(accounts[0].profile.addr, accounts[0]);
         return accounts[0];
       } else return null;
+    }
+  }
+
+  public debug = {
+    resetCache: (): void => {
+      this.cache?.reset();
+    },
+    printCache: (): void => {
+      const now = new Date();
+      console.log(` > Cache content at ${now.toISOString().replace(/T/, ' ').replace(/\..+/, '')}\n`);
+      console.log(this.cache?.dump());
     }
   }
 }

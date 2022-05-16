@@ -7,8 +7,6 @@ export default class LocalStorage implements Cache {
   private size: number;
 
   constructor(isActivated: boolean, size: number, expirationTime: number) {
-    console.debug(`arweave-account: caching ${isActivated ? 'activated' : 'deactivated'}`);
-
     this.isActivated = isActivated;
     this.expirationTime = expirationTime;
     this.size = size;
@@ -68,4 +66,8 @@ export default class LocalStorage implements Cache {
   reset(): void {
     localStorage.setItem('arweave-account', '[]');
   }
+  dump(): string {
+    // @ts-ignore localStorage is initialized in constructor
+    return localStorage.getItem('arweave-account');
+  };
 }
