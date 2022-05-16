@@ -1,44 +1,37 @@
 import { T_account, T_addr, T_item } from "../types";
+import CacheAPI from "./CacheAPI";
 
-export default class Memory {
+export default class Memory implements CacheAPI {
   private store: Map<string, T_item> = new Map<string, T_item>();
-  private isActivated: boolean;
   private expirationTime: number;
   private size: number;
 
-  constructor(isActivated: boolean, size: number, expirationTime: number) {
-    this.isActivated = isActivated;
+  constructor(size: number, expirationTime: number) {
     this.expirationTime = expirationTime;
     this.size = size;
   };
 
-  // private keys(): string[] {
-  //   let array: string[] = [];
-  //   this.store.forEach((value, key, map) => {
-  //     array.push(key)
-  //   });
-  //   return array;
-  // }
-
   get(addr: T_addr) {
-
+    let account;
+    return (account = this.store.get(addr)?.account) ? account : undefined;
   };
 
-  find(uniqueHandle: string) {};
+  find(uniqueHandle: string) {
+    return undefined;
+  };
+
   hydrate(addr: T_addr, account?: T_account) {
-    console.log(`'${addr} is hydrated'`);
     let item: T_item = {
       timestamp: Date.now(),
       addr: addr,
       account: account ? account : null,
     };
 
-    // hydrate account data
+    // add or hydrate account data
     this.store.set(item.addr, item);
 
-    if(this.store.size >= this.size){
-      this.store.delete(this.store.keys().next().value)
-    }
+    if(this.store.size >= this.size)
+      this.store.delete(this.store.keys().next().value);
   };
   reset() {
     this.store.clear();

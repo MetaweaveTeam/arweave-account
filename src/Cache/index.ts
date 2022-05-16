@@ -10,7 +10,6 @@ export default class Cache implements CacheAPI {
   private expirationTime: number;
   
   constructor(env: string | CacheAPI, size: number, expirationTime: number) {
-    console.log("env", env);
     this.size = size;
     this.expirationTime = expirationTime;
     
@@ -21,8 +20,8 @@ export default class Cache implements CacheAPI {
 
   // Environments list
   private select: { [K: string]: Function } = {
-    "web": () => new LocalStorage(true, this.size, this.expirationTime),
-    "node": () => new Memory(true, this.size, this.expirationTime)
+    "web": () => new LocalStorage(this.size, this.expirationTime),
+    "node": () => new Memory(this.size, this.expirationTime)
   };
 
   public get = (addr: string) => this.cacheObj.get(addr);

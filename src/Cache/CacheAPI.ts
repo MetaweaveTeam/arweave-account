@@ -1,4 +1,4 @@
-import { T_account, T_addr } from "../types";
+import { T_account, T_addr, T_item } from "../types";
 
 export default interface Cache {
   get(addr: T_addr): T_account | undefined;
@@ -7,5 +7,5 @@ export default interface Cache {
   
   // dev/debug purpose only
   reset(): void;  
-  dump(): string;
+  dump(): string | Map<string, T_item>;
 }

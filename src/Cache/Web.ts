@@ -2,12 +2,10 @@ import { T_item, T_account, T_addr } from '../types';
 import Cache from './CacheAPI';
 
 export default class LocalStorage implements Cache {
-  private isActivated: boolean;
   private expirationTime: number;
   private size: number;
 
-  constructor(isActivated: boolean, size: number, expirationTime: number) {
-    this.isActivated = isActivated;
+  constructor(size: number, expirationTime: number) {
     this.expirationTime = expirationTime;
     this.size = size;
 
@@ -15,7 +13,6 @@ export default class LocalStorage implements Cache {
   }
 
   get(addr: T_addr): T_account | undefined {
-    if (!this.isActivated) return undefined;
     // @ts-ignore localStorage is initialized in constructor
     const cache = JSON.parse(localStorage.getItem('arweave-account'));
 
@@ -24,7 +21,6 @@ export default class LocalStorage implements Cache {
   }
 
   find(uniqueHandle: string): T_account | undefined {
-    if (!this.isActivated) return undefined;
     // @ts-ignore localStorage is initialized in constructor
     const cache = JSON.parse(localStorage.getItem('arweave-account'));
 
@@ -51,9 +47,8 @@ export default class LocalStorage implements Cache {
 
     // hydrate account data
     if (itemIndex !== -1) cache.splice(itemIndex, 1, item);
-    // add account data
     else {
-      cache.unshift(item);
+      cache.unshift(item); // add account data
       if (cache.length > this.size) cache.pop();
     }
 
