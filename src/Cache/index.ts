@@ -4,23 +4,23 @@ import LocalStorage from './Web';
 import Memory from './node';
 
 export default class Cache implements CacheAPI {
-  private cacheObj: { [K: string]: Function } | CacheAPI;
+  private cacheObj: { [K: string]: () => any } | CacheAPI;
   private size: number;
   private expirationTime: number;
-  
+
   constructor(env: string | CacheAPI, size: number, expirationTime: number) {
     this.size = size;
     this.expirationTime = expirationTime;
-    
-    if(typeof env === "object") this.cacheObj = env;
-    else if(this.select[env]) this.cacheObj = this.select[env]();
+
+    if (typeof env === 'object') this.cacheObj = env;
+    else if (this.select[env]) this.cacheObj = this.select[env]();
     else throw new Error(`Cache for the '${env}' environment is not implemented.`);
   }
 
   // Environments list
-  private select: { [K: string]: Function } = {
-    "web": () => new LocalStorage(this.size, this.expirationTime),
-    "node": () => new Memory(this.size, this.expirationTime)
+  private select: { [K: string]: () => any } = {
+    web: () => new LocalStorage(this.size, this.expirationTime),
+    node: () => new Memory(this.size, this.expirationTime),
   };
 
   public get = (addr: string): T_account | null | undefined => this.cacheObj.get(addr);

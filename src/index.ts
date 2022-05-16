@@ -25,21 +25,17 @@ export default class Account {
     this.arweave = Arweave.init(gateway);
     this.ardb = new ArDB(this.arweave);
 
-    if(cacheIsActivated){
-      if(typeof window !== 'undefined') {
-        this.cache = new Cache("web", cacheSize, cacheTime);
-        console.log("this.cache", this.cache);
-      }
-      else this.cache = new Cache("node", cacheSize, cacheTime);
-    }
-    else
-      this.cache = null;
+    if (cacheIsActivated) {
+      if (typeof window !== 'undefined') {
+        this.cache = new Cache('web', cacheSize, cacheTime);
+      } else this.cache = new Cache('node', cacheSize, cacheTime);
+    } else this.cache = null;
   }
 
   async get(addr: T_addr): Promise<T_account | null> {
     addr = addr.trim();
-    let cacheResponse;
-    if ((cacheResponse = this.cache?.get(addr)) !== undefined) return cacheResponse;
+    const cacheResponse = this.cache?.get(addr);
+    if (cacheResponse !== undefined) return cacheResponse;
     else {
       const tx: transaction[] | block[] = await this.ardb
         .search('transactions')
@@ -55,7 +51,7 @@ export default class Account {
         profile = {
           ...profile,
           handle: `${profile.handle}#${addr.slice(0, 3)}${addr.slice(addr.length - 3)}`,
-          addr: addr,
+          addr,
         };
         const account = {
           txid: tx[0].id,
@@ -93,7 +89,7 @@ export default class Account {
         handle: `${profile.handle}#${addr.slice(0, 3)}${addr.slice(addr.length - 3)}`,
       };
       return {
-        txid: txid,
+        txid,
         profile,
       } as T_account;
     });
@@ -112,9 +108,9 @@ export default class Account {
     uniqueHandle = uniqueHandle.trim();
     // check if format is handle#xxxxxx
     if (!/^(.+)#[a-zA-Z0-9\-\_]{6}$/.test(uniqueHandle)) return null;
-    
-    let cacheResponse;
-    if ((cacheResponse = this.cache?.find(uniqueHandle)) !== undefined) return cacheResponse;
+
+    const cacheResponse = this.cache?.find(uniqueHandle);
+    if (cacheResponse !== undefined) return cacheResponse;
     else {
       const txs: transaction[] | block[] = await this.ardb
         .search('transactions')
@@ -127,19 +123,19 @@ export default class Account {
         const txid: T_txid = tx.id;
         let profile = (
           await this.arweave.api.get(txid).catch(() => {
-            return { data: null };
+            return { data: null };
           })
         ).data;
         const addr = 'owner' in tx ? tx.owner.address : 'anonymous';
 
-        if(uniqueHandle === `${profile.handle}#${addr.slice(0, 3)}${addr.slice(addr.length - 3)}`){
+        if (uniqueHandle === `${profile.handle}#${addr.slice(0, 3)}${addr.slice(addr.length - 3)}`) {
           profile = {
             ...profile,
             addr,
             handle: `${profile.handle}#${addr.slice(0, 3)}${addr.slice(addr.length - 3)}`,
           };
           return {
-            txid: txid,
+            txid,
             profile,
           } as T_account;
         }
@@ -161,8 +157,10 @@ export default class Account {
     },
     printCache: (): void => {
       const now = new Date();
+      // tslint:disable-next-line
       console.log(` > Cache content at ${now.toISOString().replace(/T/, ' ').replace(/\..+/, '')}\n`);
+      // tslint:disable-next-line
       console.log(this.cache?.dump());
-    }
-  }
+    },
+  };
 }

@@ -16,8 +16,7 @@ export default class LocalStorage implements Cache {
     // @ts-ignore localStorage is initialized in constructor
     const cache: T_item[] = JSON.parse(localStorage.getItem('arweave-account'));
 
-    return cache.find(
-      (item: T_item) => item.addr === addr && Date.now() < item.timestamp + this.expirationTime)
+    return cache.find((item: T_item) => item.addr === addr && Date.now() < item.timestamp + this.expirationTime)
       ?.account;
   }
 
@@ -37,7 +36,7 @@ export default class LocalStorage implements Cache {
   hydrate(addr: T_addr, account?: T_account): void {
     const item: T_item = {
       timestamp: Date.now(),
-      addr: addr,
+      addr,
       account: account ? account : null,
     };
 
@@ -59,11 +58,11 @@ export default class LocalStorage implements Cache {
   /*
    *  Debugging purpose only
    */
-  reset(): void {
+  reset() {
     localStorage.setItem('arweave-account', '[]');
   }
   dump(): string {
     // @ts-ignore localStorage is initialized in constructor
     return localStorage.getItem('arweave-account');
-  };
+  }
 }
