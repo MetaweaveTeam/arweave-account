@@ -12,14 +12,15 @@ export default class Memory implements CacheAPI {
   };
 
   get(addr: T_addr) {
-    return this.store.get(addr)?.account;
+    const item = this.store.get(addr);
+    if(item && Date.now() < item.timestamp + this.expirationTime)
+      return this.store.get(addr)?.account;
   };
 
   find(uniqueHandle: string) {
-    console.log("Node.find()")
     for(const [addr, item] of this.store){
       const handle = item.account?.profile.handle;
-      if(uniqueHandle === `${handle}#${addr.slice(0, 3)}${addr.slice(addr.length - 3)}`)
+      if(uniqueHandle === handle && Date.now() < item.timestamp + this.expirationTime)
         return item.account;
     }
   };

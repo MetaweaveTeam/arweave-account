@@ -38,7 +38,7 @@ export default class Account {
 
   async get(addr: T_addr): Promise<T_account | null> {
     addr = addr.trim();
-    let cacheResponse: T_account | null | undefined;
+    let cacheResponse;
     if ((cacheResponse = this.cache?.get(addr)) !== undefined) return cacheResponse;
     else {
       const tx: transaction[] | block[] = await this.ardb
@@ -113,7 +113,7 @@ export default class Account {
     // check if format is handle#xxxxxx
     if (!/^(.+)#[a-zA-Z0-9\-\_]{6}$/.test(uniqueHandle)) return null;
     
-    let cacheResponse: T_account | null | undefined;
+    let cacheResponse;
     if ((cacheResponse = this.cache?.find(uniqueHandle)) !== undefined) return cacheResponse;
     else {
       const txs: transaction[] | block[] = await this.ardb
