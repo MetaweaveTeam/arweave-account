@@ -44,26 +44,28 @@ export default class Account {
         .limit(1)
         .find();
 
-      const data = tx[0]?.id ? await this.arweave.transactions.getData(tx[0].id, { decode: true, string: true }) : null;
+      const txid: T_txid | null = tx[0] ? tx[0].id : null;
 
-      if (typeof data === 'string') {
-        let profile = JSON.parse(data);
+      if (txid) {
+        let profile = (
+          await this.arweave.api.get(txid).catch(() => {
+            this.cache?.hydrate(addr);
+            return { data: null };
+          })
+        ).data;
         profile = {
           ...profile,
           handle: `${profile.handle}#${addr.slice(0, 3)}${addr.slice(addr.length - 3)}`,
           addr,
         };
         const account = {
-          txid: tx[0].id,
+          txid,
           profile,
         };
 
         this.cache?.hydrate(addr, account);
         return account;
-      } else {
-        this.cache?.hydrate(addr);
-        return null;
-      }
+      } else return null;
     }
   }
 
