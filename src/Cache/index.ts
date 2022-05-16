@@ -1,7 +1,7 @@
 import CacheAPI from './CacheAPI';
 import { T_account, T_addr } from '../types';
 import LocalStorage from './Web';
-import Memory from './node';
+import Memory from './Node';
 
 export default class Cache implements CacheAPI {
   private cacheObj: { [K: string]: () => any } | CacheAPI;
