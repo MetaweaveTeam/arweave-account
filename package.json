@@ -40,6 +40,8 @@
   },
   "dependencies": {
     "ardb": "^1.1.10",
-    "arweave": "^1.10.23"
+    "arweave": "^1.10.23",
+    "crocks": "^0.12.4",
+    "ramda": "^0.28.0"
   }
 }

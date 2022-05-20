@@ -4,26 +4,33 @@ import { T_account, T_addr, T_txid } from './types';
 import transaction from 'ardb/lib/models/transaction';
 import block from 'ardb/lib/models/block';
 import Cache from './Cache';
+import AppData from './app-data';
 
 export default class Account {
   private arweave: Arweave;
   private ardb: ArDB;
   private cache: Cache | null;
+  private appIdentifier: string | null;
 
   constructor({
     cacheIsActivated = true,
     cacheSize = 100,
     cacheTime = 60000,
-    gateway = {
+    arweave = Arweave.init({
       host: 'arweave.net', // Hostname or IP address for a Arweave host
       port: 443, // Port
       protocol: 'https', // Network protocol http or https
       timeout: 20000, // Network request timeouts in milliseconds
       logging: false,
-    },
+    }),
+    AppIdentifier = null
+
   } = {}) {
-    this.arweave = Arweave.init(gateway);
+    this.arweave = arweave;
     this.ardb = new ArDB(this.arweave);
+    this.appData = {
+      get: appDataGet
+    }
 
     if (cacheIsActivated) {
       if (typeof window !== 'undefined') {
@@ -165,4 +172,6 @@ export default class Account {
       console.log(this.cache?.dump());
     },
   };
+
+  public appData = AppData(this)
 }
