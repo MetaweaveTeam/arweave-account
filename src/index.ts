@@ -28,9 +28,8 @@ export default class Account {
   } = {}) {
     this.arweave = arweave;
     this.ardb = new ArDB(this.arweave);
-    this.appData = {
-      get: appDataGet
-    }
+    this.appIdentifier = AppIdentifier;
+    this.AppData = {}
 
     if (cacheIsActivated) {
       if (typeof window !== 'undefined') {
@@ -71,6 +70,7 @@ export default class Account {
         };
 
         this.cache?.hydrate(addr, account);
+        this.AppData = AppData(this, addr)
         return account;
       } else return null;
     }
@@ -173,5 +173,5 @@ export default class Account {
     },
   };
 
-  public appData = AppData(this)
+  public appData = {}
 }

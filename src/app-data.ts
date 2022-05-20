@@ -3,9 +3,9 @@ import { map, path, prop } from 'ramda'
 import { T_profile } from './types'
 
 
-export default function ({ arweave, ardb, appIdentifier }) {
+export default function ({ arweave, ardb, appIdentifier }, addr: string) {
   const createTx = Async.fromPromise(arweave.createTransaction)
-  const dispatch = Async.fromPromise(tx => {
+  const dispatch = Async.fromPromise((tx: unknown) => {
     if (arweaveWallet) {
       return arweaveWallet.dispatch(tx)
     }
@@ -38,12 +38,12 @@ export default function ({ arweave, ardb, appIdentifier }) {
       .toPromise()
 
   return {
-    get: (addr: string, key: string) =>
+    get: (key: string) =>
       getProfile(addr)
         .map(path([appIdentifier, key]))
         .toPromise()
     ,
-    set: (addr: string, key: string, value: any) => {
+    set: (key: string, value: any) => {
       getProfile(addr)
         .map(set(lensPath([appIdentifier, key]), value))
         .chain(writeProfile)
