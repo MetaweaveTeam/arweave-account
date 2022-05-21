@@ -29,6 +29,8 @@
   },
   "homepage": "https://github.com/MetaweaveTeam/arweave-account#readme",
   "devDependencies": {
+    "@types/crocks": "^0.12.0",
+    "@types/ramda": "^0.28.13",
     "nock": "^13.2.4",
     "node-localstorage": "^2.2.1",
     "prettier": "^2.5.1",

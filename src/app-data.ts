@@ -1,19 +1,53 @@
 import { Async } from 'crocks'
-import { map, path, prop } from 'ramda'
+import { lensPath, map, path, prop, set } from 'ramda'
 import { T_profile } from './types'
 
+declare var arweaveWallet: any;
 
-export default function ({ arweave, ardb, appIdentifier }, addr: string) {
-  const createTx = Async.fromPromise(arweave.createTransaction)
-  const dispatch = Async.fromPromise((tx: unknown) => {
+interface PartialTx {
+  data: unknown
+}
+
+interface Arweave {
+  createTransaction: (tx: PartialTx) => Promise<unknown>,
+  api: {
+    get: () => Promise<any>,
+    post: () => Promise<any>
+  }
+  transactions: {
+    sign: any,
+    post: any
+  }
+}
+
+interface Input {
+  arweave: Arweave,
+  ardb: any,
+  appIdentifier: string
+}
+
+interface Tag {
+  name: string,
+  value: string
+}
+
+// @ts-ignore
+const { fromPromise, of } = Async
+
+export default function ({ arweave, ardb, appIdentifier }: Input, addr: string) {
+  const get = fromPromise(arweave.api.get.bind(arweave.api))
+  const post = fromPromise(arweave.api.post.bind(arweave.api))
+
+  const createTx = fromPromise(arweave.createTransaction)
+  const dispatch = fromPromise((tx: unknown) => {
     if (arweaveWallet) {
       return arweaveWallet.dispatch(tx)
     }
     arweave.transactions.sign(tx)
       .then(() => arweave.transactions.post(tx))
   })
-  const getProfile = (addr: string) => Async.of(addr)
-    .chain(Async.fromPromise((addr: string) => ardb
+  const getProfile = (addr: string) => of(addr)
+    .chain(fromPromise((addr: string) => ardb
       .search('transactions')
       .tag('Protocol-Name', 'Account-0.2')
       .from(addr)
@@ -21,14 +55,14 @@ export default function ({ arweave, ardb, appIdentifier }, addr: string) {
       .find()
     ))
     .map(prop('id'))
-    .chain(Async.fromPromise(arweave.api.get))
+    .chain(get)
     .map(prop('data'))
 
   const writeProfile = (profile: T_profile) =>
-    Async.of(profile)
+    of(profile)
       .chain(createTx)
-      .map(tx => {
-        map(({ name, value }) => tx.addTag(name, value), [
+      .map((tx: any) => {
+        map(({ name, value }: Tag) => tx.addTag(name, value), [
           { name: 'Protocol-Name', value: 'Account-0.2' },
           { name: 'handle', value: profile.handle }
         ])
