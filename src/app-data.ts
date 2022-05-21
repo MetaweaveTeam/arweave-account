@@ -4,28 +4,6 @@ import { T_profile } from './types'
 
 declare var arweaveWallet: any;
 
-interface PartialTx {
-  data: unknown
-}
-
-interface Arweave {
-  createTransaction: (tx: PartialTx) => Promise<unknown>,
-  api: {
-    get: () => Promise<any>,
-    post: () => Promise<any>
-  }
-  transactions: {
-    sign: any,
-    post: any
-  }
-}
-
-interface Input {
-  arweave: Arweave,
-  ardb: any,
-  appIdentifier: string
-}
-
 interface Tag {
   name: string,
   value: string
@@ -34,9 +12,9 @@ interface Tag {
 // @ts-ignore
 const { fromPromise, of } = Async
 
-export default function ({ arweave, ardb, appIdentifier }: Input, addr: string) {
+export default function ({ arweave, ardb, appIdentifier }: any, addr: string) {
   const get = fromPromise(arweave.api.get.bind(arweave.api))
-  const post = fromPromise(arweave.api.post.bind(arweave.api))
+  //const post = fromPromise(arweave.api.post.bind(arweave.api))
 
   const createTx = fromPromise(arweave.createTransaction)
   const dispatch = fromPromise((tx: unknown) => {
@@ -54,12 +32,13 @@ export default function ({ arweave, ardb, appIdentifier }: Input, addr: string) 
       .limit(1)
       .find()
     ))
+    .map(x => (console.log(x), x))
     .map(prop('id'))
     .chain(get)
     .map(prop('data'))
 
   const writeProfile = (profile: T_profile) =>
-    of(profile)
+    of({ data: profile })
       .chain(createTx)
       .map((tx: any) => {
         map(({ name, value }: Tag) => tx.addTag(name, value), [
