@@ -13,6 +13,7 @@ type T_profile = {
     facebook?: string;
   };
   avatar: T_txid;
+  apps: any;
 };
 
 type T_account = {

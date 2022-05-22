@@ -11,13 +11,18 @@ nock('https://arweave.net')
   .reply(200)
 
 nock('https://arweave.net')
-  .get('/YRecidAYb-nlSW4rlRZlKzQ66qOhPrGvBMX8qLguHfE')
+  .get('/1HfOBWt5brDNNIt96fIRazPOUOxAF-p8R5_YXXo9hN0')
   .reply(200, {
     "addr": "",
     "links": { "twitter": "rakis_me", "github": "rakis-me" },
     "handle": "rakis",
     "name": "rakis",
-    "bio": "Arweave Developer"
+    "bio": "Arweave Developer",
+    "apps": {
+      "permanotes": {
+        "pk": "test-data"
+      }
+    }
   })
 
 nock('https://arweave.net')
@@ -52,7 +57,6 @@ nock('https://arweave.net')
     }
   })
 
-
 const arweave = Arweave.init({
   host: 'arweave.net',
   port: 443,
@@ -62,14 +66,11 @@ const arweave = Arweave.init({
 const appIdentifier = 'permanotes'
 const addr = 'x4PpVA-uhpIsUWNB8gLtMLMS3OClviGoMwJCndhPS3c'
 
+
+
 test('get appInfo item', async () => {
-  // const w = await arweave.wallets.generate()
-  // const addr = await arweave.wallets.jwkToAddress(w)
-  // await arweave.api.get(`mint/${addr}/${arweave.ar.arToWinston('100')}`)
   const ardb = new ArDB(arweave)
   const appData = AppData({ arweave, ardb, appIdentifier }, addr)
-
-  //await appData.set('pk', 'test-data')
 
   const item = await appData.get('pk')
 
