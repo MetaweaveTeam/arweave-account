@@ -65,6 +65,10 @@ nock('https://arweave.net')
   .get('/price/161')
   .reply(200, '73874553')
 
+nock('https://arweave.net')
+  .post('/tx')
+  .reply(200)
+
 const arweave = Arweave.init({
   host: 'arweave.net',
   port: 443,
@@ -75,16 +79,9 @@ const appIdentifier = 'permanotes'
 const addr = 'x4PpVA-uhpIsUWNB8gLtMLMS3OClviGoMwJCndhPS3c'
 
 test('set appInfo item', async () => {
-  // set global wallet
-  // @ts-ignore
-  global.arweaveWallet = {
-    dispatch(tx) {
-      return Promise.resolve({ id: '1' })
-    }
-  }
-
+  const jwk = await arweave.wallets.generate()
   const ardb = new ArDB(arweave)
-  const appData = AppData({ arweave, ardb, appIdentifier }, addr)
+  const appData = AppData({ arweave, ardb, appIdentifier, jwk }, addr)
 
   const result = await appData.set('pk', 'test-1234')
   console.log(result)

@@ -8,7 +8,10 @@
     "strict": true,
     "esModuleInterop": true,
     "noImplicitUseStrict": true,
-    "alwaysStrict": false
+    "alwaysStrict": false,
+    "types": [
+      "arconnect"
+    ]
   },
   "include": [
     "src"

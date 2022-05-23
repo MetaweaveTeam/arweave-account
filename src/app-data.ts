@@ -1,8 +1,32 @@
+import Arweave from 'arweave'
+import ArDB from 'ardb'
+import Transaction from "arweave/node/lib/transaction"
+
 import { Async } from 'crocks'
 import { compose, head, lensPath, map, path, prop, set } from 'ramda'
 import { T_profile } from './types'
 
-declare var arweaveWallet: any;
+interface JWKPublicInterface {
+  kty: string;
+  e: string;
+  n: string;
+}
+
+interface JWKInterface extends JWKPublicInterface {
+  d?: string;
+  p?: string;
+  q?: string;
+  dp?: string;
+  dq?: string;
+  qi?: string;
+}
+
+interface AccountMgr {
+  arweave: Arweave,
+  ardb: ArDB,
+  appIdentifier: string,
+  jwk?: JWKInterface
+}
 
 interface Tag {
   name: string,
@@ -14,17 +38,15 @@ const { fromPromise, of } = Async
 // @ts-ignore
 const getFirstTxId = compose(prop('id'), head)
 
-export default function ({ arweave, ardb, appIdentifier }: any, addr: string) {
+export default function ({ arweave, ardb, appIdentifier, jwk }: AccountMgr, addr: string) {
   const get = fromPromise(arweave.api.get.bind(arweave.api))
   //const post = fromPromise(arweave.api.post.bind(arweave.api))
 
   const createTx = fromPromise(arweave.createTransaction.bind(arweave))
 
-  const dispatch = fromPromise((tx: unknown) => {
-    if (arweaveWallet) {
-      return arweaveWallet.dispatch(tx)
-    }
-    arweave.transactions.sign(tx)
+  const dispatch = fromPromise((tx: Transaction) => {
+    //const wallet : JWKInterface | string = jwk | 'use_wallet'; 
+    return (jwk ? arweave.transactions.sign(tx, jwk) : arweave.transactions.sign(tx))
       .then(() => arweave.transactions.post(tx))
   })
 
@@ -43,7 +65,7 @@ export default function ({ arweave, ardb, appIdentifier }: any, addr: string) {
   const writeProfile = (profile: T_profile) =>
     of({ data: JSON.stringify(profile) })
       .chain(createTx)
-      .map((tx: any) => {
+      .map((tx: Transaction) => {
         map(({ name, value }: Tag) => tx.addTag(name, value), [
           { name: 'Protocol-Name', value: 'Account-0.2' },
           { name: 'handle', value: profile.handle }
