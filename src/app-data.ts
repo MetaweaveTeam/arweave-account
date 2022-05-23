@@ -21,7 +21,7 @@ interface JWKInterface extends JWKPublicInterface {
   qi?: string;
 }
 
-interface AccountMgr {
+export interface AccountMgr {
   arweave: Arweave,
   ardb: ArDB,
   appIdentifier: string,

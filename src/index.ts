@@ -5,6 +5,7 @@ import transaction from 'ardb/lib/models/transaction';
 import block from 'ardb/lib/models/block';
 import Cache from './Cache';
 import AppData from './app-data';
+import type { AccountMgr } from './app-data'
 
 export default class Account {
   private arweave: Arweave;
@@ -70,7 +71,8 @@ export default class Account {
 
         this.cache?.hydrate(addr, account);
         //
-        this.appData = AppData(this, addr)
+        const accountMgr: AccountMgr = { arweave: this.arweave, ardb: this.ardb, appIdentifier: this.appIdentifier as string }
+        this.appData = AppData(accountMgr, addr)
         return account;
       } else return null;
     }
