@@ -3,7 +3,7 @@ import ArDB from 'ardb'
 import Transaction from "arweave/node/lib/transaction"
 
 import { Async } from 'crocks'
-import { compose, head, lensPath, map, path, prop, set } from 'ramda'
+import { compose, dissocPath, head, lensPath, map, path, prop, set } from 'ramda'
 import { T_profile } from './types'
 
 interface JWKPublicInterface {
@@ -81,9 +81,14 @@ export default function ({ arweave, ardb, appIdentifier, jwk }: AccountMgr, addr
         .map(path(['apps', appIdentifier, key]))
         .toPromise()
     ,
-    set: (key: string, value: any) =>
+    set: (key: string, value: unknown) =>
       getProfile(addr)
         .map(set(lensPath(['apps', appIdentifier, key]), value))
+        .chain(writeProfile)
+        .toPromise(),
+    remove: (key: string) =>
+      getProfile(addr)
+        .map(dissocPath(['apps', appIdentifier, key]))
         .chain(writeProfile)
         .toPromise()
 
