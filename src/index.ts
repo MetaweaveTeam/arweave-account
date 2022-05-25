@@ -7,6 +7,14 @@ import Cache from './Cache';
 import AppData from './app-data';
 import type { AccountMgr } from './app-data'
 
+interface AccountConstructorArgs {
+  cacheIsActivated: boolean,
+  cacheSize: number,
+  cacheTime: number,
+  arweave: Arweave,
+  AppIdentifier: string | null
+}
+
 export default class Account {
   private arweave: Arweave;
   private ardb: ArDB;
@@ -26,7 +34,7 @@ export default class Account {
     }),
     AppIdentifier = null
 
-  } = {}) {
+  }: AccountConstructorArgs) {
     this.arweave = arweave;
     this.ardb = new ArDB(this.arweave);
     this.appIdentifier = AppIdentifier;

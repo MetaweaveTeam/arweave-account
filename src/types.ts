@@ -27,4 +27,4 @@ type T_item = {
   account: T_account | null;
 };
 
-export type { T_addr, T_txid, T_profile, T_account, T_item };
+export type { T_addr, T_txid, T_profile, T_account, T_item, AccountConstructorArgs };
