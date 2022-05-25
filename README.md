@@ -38,3 +38,31 @@ await account.find(handle#uniqID);
 ```
 import { T_addr, T_txid, T_profile, T_account } from 'arweave-account/lib/types';
 ```
+
+## appData methods
+
+Using arweave-account, you can set and get profile config data for your decentralized application.
+
+The first thing you need to do is pass an arweave object and an `AppIdentifier` which is a string that identifies your application.
+
+``` js
+const account = new Account({arweave, AppIdentifier: 'myapp'})
+```
+
+### set item for your app
+
+``` js
+await account.appData.set('key', value)
+```
+
+### get item for your app
+
+``` js
+await account.appData.get('key')
+```
+
+### remove item from your app
+
+``` js
+await account.appData.remove('key')
+```
