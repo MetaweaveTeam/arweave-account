@@ -7,14 +7,6 @@ import Cache from './Cache';
 import AppData from './app-data';
 import type { AccountMgr } from './app-data'
 
-interface AccountConstructorArgs {
-  cacheIsActivated: boolean,
-  cacheSize: number,
-  cacheTime: number,
-  arweave: Arweave,
-  AppIdentifier: string | null
-}
-
 export default class Account {
   private arweave: Arweave;
   private ardb: ArDB;
@@ -32,9 +24,9 @@ export default class Account {
       timeout: 20000, // Network request timeouts in milliseconds
       logging: false,
     }),
-    AppIdentifier = null
+    AppIdentifier = ''
 
-  }: AccountConstructorArgs) {
+  } = {}) {
     this.arweave = arweave;
     this.ardb = new ArDB(this.arweave);
     this.appIdentifier = AppIdentifier;
@@ -79,8 +71,9 @@ export default class Account {
 
         this.cache?.hydrate(addr, account);
         //
-        const accountMgr: AccountMgr = { arweave: this.arweave, ardb: this.ardb, appIdentifier: this.appIdentifier as string }
-        this.appData = AppData(accountMgr, addr)
+        const accountMgr: AccountMgr = { arweave: this.arweave, ardb: this.ardb, appIdentifier: this.appIdentifier as string };
+        this.appData = AppData(accountMgr, addr);
+
         return account;
       } else return null;
     }
@@ -107,6 +100,11 @@ export default class Account {
         addr,
         handle: `${profile.handle}#${addr.slice(0, 3)}${addr.slice(addr.length - 3)}`,
       };
+
+      // set address for profile
+      const accountMgr: AccountMgr = { arweave: this.arweave, ardb: this.ardb, appIdentifier: this.appIdentifier as string }
+      this.appData = AppData(accountMgr, addr)
+
       return {
         txid,
         profile,
@@ -165,6 +163,11 @@ export default class Account {
 
       if (accounts.length > 0) {
         this.cache?.hydrate(accounts[0].profile.addr, accounts[0]);
+
+        // // set address for profile
+        // const accountMgr: AccountMgr = { arweave: this.arweave, ardb: this.ardb, appIdentifier: this.appIdentifier as string }
+        // this.appData = AppData(accountMgr, accounts[0].profile.addr)
+
         return accounts[0];
       } else return null;
     }
