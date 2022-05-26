@@ -53,7 +53,7 @@ export default class Account {
             return { data: null };
           })
         ).data;
-        if(profile.handle && !profile.links){
+        if(profile.handle && profile.links){
           profile = {
             ...profile,
             handle: `${profile.handle}#${addr.slice(0, 3)}${addr.slice(addr.length - 3)}`,
