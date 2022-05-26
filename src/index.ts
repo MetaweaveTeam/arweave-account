@@ -53,19 +53,22 @@ export default class Account {
             return { data: null };
           })
         ).data;
-        profile = {
-          ...profile,
-          handle: `${profile.handle}#${addr.slice(0, 3)}${addr.slice(addr.length - 3)}`,
-          addr,
-        };
-        const account = {
-          txid,
-          profile,
-        };
-
-        this.cache?.hydrate(addr, account);
-        return account;
-      } else return null;
+        if(profile.handle && !profile.links){
+          profile = {
+            ...profile,
+            handle: `${profile.handle}#${addr.slice(0, 3)}${addr.slice(addr.length - 3)}`,
+            addr,
+          };
+          const account = {
+            txid,
+            profile,
+          };
+          
+          this.cache?.hydrate(addr, account);
+          return account;
+        }
+        else return null; // missing data
+      } else return null; // no Account
     }
   }
 
