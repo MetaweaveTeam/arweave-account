@@ -18,7 +18,7 @@ export default class Memory implements CacheAPI {
 
   find(uniqueHandle: string) {
     for (const [addr, item] of this.store) {
-      const handle = item.account?.profile.handle;
+      const handle = item.account?.profile?.handleName;
       if (uniqueHandle === handle && Date.now() < item.timestamp + this.expirationTime) return item.account;
     }
   }

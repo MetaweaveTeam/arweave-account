@@ -1,11 +1,13 @@
 import Arweave from 'arweave';
 import ArDB from 'ardb';
-import { T_account, T_addr, T_txid } from './types';
+import { T_account, T_addr, T_profile, T_txid } from './types';
 import transaction from 'ardb/lib/models/transaction';
 import block from 'ardb/lib/models/block';
 import Cache from './Cache';
 import { JWKInterface } from 'arweave/node/lib/wallet';
-import { decode } from './data';
+import { decode, isProfile} from './data';
+
+export { T_profile }
 
 export default class Account {
   private arweave: Arweave;
@@ -35,8 +37,15 @@ export default class Account {
     } else this.cache = null;
   }
 
-  async connectWallet(jwk: JWKInterface | "use_wallet" = "use_wallet") {
+  async connect(jwk: JWKInterface | "use_wallet" = "use_wallet") {
     this.walletAddr = await this.arweave.wallets.getAddress(jwk);
+  }
+
+  async updateProfile(profile: T_profile) {
+    if(!this.walletAddr) throw Error("Method connect() should be called before updateProfile().");
+    if(!isProfile(profile)) throw Error(`Object "${profile}" doesn't match with the shape of a T_profile object.\nTypescript tip: import { T_profile } from 'arweave-account'`);
+
+    throw "fdsfdsfds";
   }
 
   async get(addr: T_addr): Promise<T_account | null> {
@@ -61,7 +70,7 @@ export default class Account {
           })
         ).data;
 
-        return decode(txid, addr, data);
+        return decode(txid, addr, data); // return null if corrupted data 
       } else return null; // no Account
     }
   }
@@ -91,7 +100,7 @@ export default class Account {
       (v, i, a): v is T_account =>
         v !== null &&
         // remove address duplicates: https://stackoverflow.com/a/56757215
-        a.findIndex((t) => t?.profile.addr === v?.profile.addr) === i,
+        a.findIndex((t) => t?.addr === v?.addr) === i,
     );
   }
 
@@ -125,7 +134,7 @@ export default class Account {
       const accounts = a.filter((e): e is T_account => e !== undefined);
 
       if (accounts.length > 0) {
-        this.cache?.hydrate(accounts[0].profile.addr, accounts[0]);
+        this.cache?.hydrate(accounts[0].addr, accounts[0]);
         return accounts[0];
       } else return null;
     }

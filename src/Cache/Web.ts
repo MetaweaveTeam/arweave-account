@@ -26,7 +26,7 @@ export default class LocalStorage implements Cache {
 
     return cache.find(
       (record: T_item) =>
-        record.account?.profile.handle === uniqueHandle && Date.now() < record.timestamp + this.expirationTime,
+        record.account?.handle === uniqueHandle && Date.now() < record.timestamp + this.expirationTime,
     )?.account;
   }
 
