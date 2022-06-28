@@ -3,16 +3,16 @@ type T_txid = string;
 
 type T_profile = {
   addr: T_addr;
-  handle: string;
-  name: string;
-  bio: string;
+  handle?: string;
+  name?: string;
+  bio?: string;
   links: {
     twitter?: string;
     instagram?: string;
     github?: string;
     facebook?: string;
   };
-  avatar: T_txid;
+  avatar?: T_txid;
 };
 
 type T_account = {

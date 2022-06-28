@@ -38,3 +38,50 @@ await account.find(handle#uniqID);
 ```
 import { T_addr, T_txid, T_profile, T_account } from 'arweave-account/lib/types';
 ```
+
+# How does it works
+
+## Exemple
+
+### Encoded arweave account data
+
+```
+{
+  "handle":"cromatikap",
+  "name":"Axel",
+  "bio":"Founder of Metaweave.xyz\nI love dogs",
+  "avatar":"xqjVvn9b8hmtDJhfVw80OZzAsn-ErpWbaFCPZWG5vKI"
+  "links": {
+    "twitter":"cromatikap",
+    "github":"cromatikap",
+    "instagram":"cromatikap",
+    "discord":"cromatikap#6039"
+  },
+  "addr":"aIUmY9Iy4qoW3HOikTy6aJww-mM4Y-CUJ7mXoPdzdog", // TO REMOVE
+}
+```
+
+### Decoded arweave account data
+
+Here is the dataset you get by using the library
+
+```
+{
+  "txid": "NPJJoq-9EwUeAce_bSbSyqICaGs4_7Hg6VxCyoCY8UQ",
+  "profile": {
+    "addr": "aIUmY9Iy4qoW3HOikTy6aJww-mM4Y-CUJ7mXoPdzdog",
+    "links": {
+      "twitter": "cromatikap",
+      "github": "cromatikap",
+      "instagram": "cromatikap",
+      "discord": "cromatikap#6039"
+    },
+    "handle": "cromatikap#aIUdog",
+    "name": "Axel",
+    "bio": "Founder of Metaweave.xyz\nI love dogs",
+    "avatar": "xqjVvn9b8hmtDJhfVw80OZzAsn-ErpWbaFCPZWG5vKI"
+  }
+}
+```
+
+For convenience, the related `txid` and wallet `addr` is added. As well, you have access to the full unique `handle` derived from the user chosen handle and their wallet address

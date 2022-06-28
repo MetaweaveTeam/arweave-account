@@ -4,11 +4,14 @@ import { T_account, T_addr, T_txid } from './types';
 import transaction from 'ardb/lib/models/transaction';
 import block from 'ardb/lib/models/block';
 import Cache from './Cache';
+import { JWKInterface } from 'arweave/node/lib/wallet';
+import { decode } from './data';
 
 export default class Account {
   private arweave: Arweave;
   private ardb: ArDB;
   private cache: Cache | null;
+  private walletAddr: string | null = null;
 
   constructor({
     cacheIsActivated = true,
@@ -32,6 +35,10 @@ export default class Account {
     } else this.cache = null;
   }
 
+  async connectWallet(jwk: JWKInterface | "use_wallet" = "use_wallet") {
+    this.walletAddr = await this.arweave.wallets.getAddress(jwk);
+  }
+
   async get(addr: T_addr): Promise<T_account | null> {
     addr = addr.trim();
     const cacheResponse = this.cache?.get(addr);
@@ -47,27 +54,14 @@ export default class Account {
       const txid: T_txid | null = tx[0] ? tx[0].id : null;
 
       if (txid) {
-        let profile = (
+        const data = (
           await this.arweave.api.get(txid).catch(() => {
             this.cache?.hydrate(addr);
             return { data: null };
           })
         ).data;
-        if(profile.handle && profile.links){
-          profile = {
-            ...profile,
-            handle: `${profile.handle}#${addr.slice(0, 3)}${addr.slice(addr.length - 3)}`,
-            addr,
-          };
-          const account = {
-            txid,
-            profile,
-          };
-          
-          this.cache?.hydrate(addr, account);
-          return account;
-        }
-        else return null; // missing data
+
+        return decode(txid, addr, data);
       } else return null; // no Account
     }
   }
@@ -82,21 +76,13 @@ export default class Account {
 
     const formattedAccounts = txs.map(async (tx) => {
       const txid: T_txid = tx.id;
-      let profile = (
+      const addr = 'owner' in tx ? tx.owner.address : 'anonymous';
+      const data = (
         await this.arweave.api.get(txid).catch(() => {
           return { data: null };
         })
       ).data;
-      const addr = 'owner' in tx ? tx.owner.address : 'anonymous';
-      profile = {
-        ...profile,
-        addr,
-        handle: `${profile.handle}#${addr.slice(0, 3)}${addr.slice(addr.length - 3)}`,
-      };
-      return {
-        txid,
-        profile,
-      } as T_account;
+      return decode(txid, addr, data);
     });
 
     const accounts = await Promise.all(formattedAccounts);
@@ -126,24 +112,13 @@ export default class Account {
 
       const formattedAccounts = txs.map(async (tx) => {
         const txid: T_txid = tx.id;
-        let profile = (
+        const addr = 'owner' in tx ? tx.owner.address : 'anonymous';
+        const data = (
           await this.arweave.api.get(txid).catch(() => {
             return { data: null };
           })
         ).data;
-        const addr = 'owner' in tx ? tx.owner.address : 'anonymous';
-
-        if (uniqueHandle === `${profile.handle}#${addr.slice(0, 3)}${addr.slice(addr.length - 3)}`) {
-          profile = {
-            ...profile,
-            addr,
-            handle: `${profile.handle}#${addr.slice(0, 3)}${addr.slice(addr.length - 3)}`,
-          };
-          return {
-            txid,
-            profile,
-          } as T_account;
-        }
+        return decode(txid, addr, data);
       });
 
       const a = await Promise.all(formattedAccounts);
