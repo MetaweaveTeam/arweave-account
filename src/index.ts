@@ -43,7 +43,7 @@ export default class Account {
 
   async updateProfile(profile: T_profile) {
     if(!this.walletAddr) throw Error("Method connect() should be called before updateProfile().");
-    if(!isProfile(profile)) throw Error(`Object "${profile}" doesn't match with the shape of a T_profile object.\nTypescript tip: import { T_profile } from 'arweave-account'`);
+    if(!isProfile(profile)) throw Error(`Object "${JSON.stringify(profile)}" doesn't match with the shape of a T_profile object.\nTypescript tip: import { T_profile } from 'arweave-account'`);
 
     throw "fdsfdsfds";
   }
