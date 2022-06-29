@@ -48,15 +48,31 @@ export default class Account {
     if(!isProfile(profile)) throw Error(`Object "${JSON.stringify(profile)}" doesn't match with the shape of a T_profile object.\nTypescript tip: import { T_profile } from 'arweave-account'`);
 
     const data = JSON.stringify(encode(profile));
-    console.log(data);
 
     const tx = await this.arweave.createTransaction({data});
     tx.addTag("Protocol-Name", PROTOCOL_NAME);
     tx.addTag("handle", profile.handleName);
 
-    // @ts-ignore
-    const result = await arweaveWallet.dispatch(tx);
-    console.log(result);
+    let result = tx
+    try {
+      // @ts-ignore try bundlr first
+      if(window.arweaveWallet){
+        console.log("using dispatch");
+        // @ts-ignore try bundlr first
+        result = await window.arweaveWallet.dispatch(tx);
+      }
+      else
+        throw "no window.arweaveWallet";
+    } catch (e) {
+      try{
+        console.log("using arweave.transactions.post");
+        await this.arweave.transactions.sign(tx);
+        await this.arweave.transactions.post(tx);
+      }
+      catch(e) { throw e; }
+    }
+
+    return result;
   }
 
   async get(addr: T_addr): Promise<T_account | null> {
