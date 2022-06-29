@@ -5,9 +5,11 @@ import transaction from 'ardb/lib/models/transaction';
 import block from 'ardb/lib/models/block';
 import Cache from './Cache';
 import { JWKInterface } from 'arweave/node/lib/wallet';
-import { decode, isProfile} from './data';
+import { decode, encode, isProfile} from './data';
 
-export { T_profile }
+const PROTOCOL_NAME = "Account-0.2";
+
+export { T_account as ArAccount, T_profile as ArProfile }
 
 export default class Account {
   private arweave: Arweave;
@@ -45,7 +47,16 @@ export default class Account {
     if(!this.walletAddr) throw Error("Method connect() should be called before updateProfile().");
     if(!isProfile(profile)) throw Error(`Object "${JSON.stringify(profile)}" doesn't match with the shape of a T_profile object.\nTypescript tip: import { T_profile } from 'arweave-account'`);
 
-    throw "fdsfdsfds";
+    const data = JSON.stringify(encode(profile));
+    console.log(data);
+
+    const tx = await this.arweave.createTransaction({data});
+    tx.addTag("Protocol-Name", PROTOCOL_NAME);
+    tx.addTag("handle", profile.handleName);
+
+    // @ts-ignore
+    const result = await arweaveWallet.dispatch(tx);
+    console.log(result);
   }
 
   async get(addr: T_addr): Promise<T_account | null> {

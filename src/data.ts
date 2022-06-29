@@ -1,7 +1,14 @@
 import { T_account, T_accountEncoded, T_addr, T_profile, T_txid } from "./types"
 
-const encode = (account: T_account): string | void => {
+const encode = (profile: T_profile): T_accountEncoded | null => {
 
+  let data: T_accountEncoded = { handle: profile.handleName };
+  if(profile.avatar) data = {...data, avatar: profile.avatar };
+  if(profile.name) data = {...data, name: profile.name };
+  if(profile.bio) data = {...data, bio: profile.bio };
+  if(profile.links) data = {...data, links: profile.links };
+
+  return data;
 }
 
 const isEncodedAccount = (obj: any): obj is T_accountEncoded => {

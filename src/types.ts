@@ -24,7 +24,7 @@ type T_account = {
 
 type T_accountEncoded = {
   handle: string;
-  avatar: string;
+  avatar?: string;
   name?: string;
   bio?: string;
   links?: {
