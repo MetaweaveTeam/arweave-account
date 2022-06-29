@@ -6,21 +6,21 @@ Arweave accounts rely on the native gateways operations to write and retrieve us
 
 # Development
 
-> ℹ️ If it's your first time trying `arweave-account`, we recommend to try the [interactive documentation](https://account.metaweave.xyz) as it might be enough to implement `arweave-account` into your app.
+> ℹ️ If it's your first time trying `arweave-account`, __we recommend to try the [interactive documentation](https://account.metaweave.xyz)__.
 
 If you're in for a deeper look at arweave account, you are at the right place
 
 - [Development](#development)
-  - [Installation & Import](#installation-import)
+  - [Installation & Import](#installation--import)
   - [Basic usages](#basic-usages)
-  - [creation/update flow](#creation/update-flow)
+  - [Creation/update flow](#creationupdate-flow)
   - [Advanced usages](#advanced-usages)
   - [References](#references)
     - [Typescript imports](#typescript-imports)
     - [ArAccount object](#araccount-object)
     - [ArProfile object](#arprofile-object)
 - [Architecture](#architecture)
-- [Migrate from 1.2.5 to 1.3.x](#migrate-from-1.2.5-to-1.3.x)
+- [Migrate from 1.2.5 to 1.3.x](#migrate-from-125-to-13x)
 
 ## Installation & Import
 
