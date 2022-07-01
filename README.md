@@ -79,6 +79,12 @@ await account.updateProfile(profileObj);
 ```
 Make sure `connect()` is called before.
 
+### Note
+
+The advanced usages are only compatible with wallets injecting the `arweaveWallet` object with [`dispatch()`](https://github.com/th8ta/ArConnect#dispatchtransaction-promisedispatchresult).
+
+> ℹ️ If you wish having more wallets compatible, feel free to open a discussion here (issue) or DM me on discord: cromatikap#6039
+
 ## References
 
 ### Typescript imports
@@ -167,3 +173,5 @@ For convenience, the related `txid` and wallet `addr` is added. As well, you hav
 The unique handle derived from the user chosen handle name and their wallet address is now accessible at the `account` level.
 
 In the `account.profile` object, a new property `handleName` is available which constitutes the name part only of the user handle.
+
+# Notes
