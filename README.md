@@ -19,7 +19,7 @@ If you're in for a deeper look at arweave account, you are at the right place
     - [Typescript imports](#typescript-imports)
     - [ArAccount object](#araccount-object)
     - [ArProfile object](#arprofile-object)
-    - [`avatar` and `banner` properties](#--avatar---and---banner---properties)
+    - [`avatar` and `banner` properties](#avatar-and-banner-properties)
 - [Architecture](#architecture)
 - [Migrate from 1.2.5 to 1.3.x](#migrate-from-125-to-13x)
 
@@ -113,8 +113,8 @@ When getting account information, the library request the relevant transaction t
 | `handleName`  | yes  | The handle name chosen by the user, this is a required constituent of the generated account unique handle |
 | `name`        | no   | A secondary name |
 | `bio`         | no   | Biography information |
-| `avatar`      | no   | picture URI of the user avatar supporting multiple protocols |
-| `avatarURL`   | no   | picture txid of the user avatar |
+| `avatar`      | no   | picture URI of the user avatar [supporting multiple protocols](#avatar-and-banner-properties) |
+| `avatarURL`   | no   | Out of the box URL picture of the user avatar |
 | `links`       | yes  | Object of the user social links |
 
 ## `avatar` and `banner` properties
