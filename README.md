@@ -19,6 +19,7 @@ If you're in for a deeper look at arweave account, you are at the right place
     - [Typescript imports](#typescript-imports)
     - [ArAccount object](#araccount-object)
     - [ArProfile object](#arprofile-object)
+    - [`avatar` and `banner` properties](#--avatar---and---banner---properties)
 - [Architecture](#architecture)
 - [Migrate from 1.2.5 to 1.3.x](#migrate-from-125-to-13x)
 
@@ -106,8 +107,30 @@ When getting account information, the library request the relevant transaction t
 | `handleName`  | yes  | The handle name chosen by the user, this is a required constituent of the generated account unique handle |
 | `name`        | no   | A secondary name |
 | `bio`         | no   | Biography information |
-| `avatar`      | no   | picture txid of the user avatar |
+| `avatar`      | no   | picture URI of the user avatar supporting multiple protocols |
+| `avatarURL`   | no   | picture txid of the user avatar |
 | `links`       | yes  | Object of the user social links |
+
+## `avatar` and `banner` properties
+
+Image properties such as `avatar` and `banner` can refer to an NFT from different chains. The following protocols are supported:
+
+- http://
+- https://
+- ar://
+
+> ℹ️ If you wish to add other protocol, we would be happy to do so. Please feel free to reach out! 
+
+> ❣️ Also, the Metaweave team gives grants for merged Pull Requests.
+
+For each image property, an `https` URL is generated according to the original URI provided. You can access it with the suffix `URL`.
+
+For example:
+
+| Property name       | value                 |
+| ------------------  | --------------------------------------------------------------- |
+| `profile.avatar`    | ar://xqjVvn9b8hmtDJhfVw80OZzAsn-ErpWbaFCPZWG5vKI                |
+| `profile.avatarURL` | https://arweave.net/xqjVvn9b8hmtDJhfVw80OZzAsn-ErpWbaFCPZWG5vKI |
 
 # Architecture
 
@@ -167,3 +190,7 @@ For convenience, the related `txid` and wallet `addr` is added. As well, you hav
 The unique handle derived from the user chosen handle name and their wallet address is now accessible at the `account` level.
 
 In the `account.profile` object, a new property `handleName` is available which constitutes the name part only of the user handle.
+
+2. URL ressources comes auto generated
+
+You no longer need to craft an URL from the `avatar` property. The library now delivers an URL ready to use in any standard <img /> tag

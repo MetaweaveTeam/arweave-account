@@ -5,15 +5,15 @@ import transaction from 'ardb/lib/models/transaction';
 import block from 'ardb/lib/models/block';
 import Cache from './Cache';
 import { JWKInterface } from 'arweave/node/lib/wallet';
-import { decode, encode, isProfile} from './data';
-
-const PROTOCOL_NAME = "Account-0.2";
+import Data from './data';
+import { PROTOCOL_NAME } from './config';
 
 export { T_account as ArAccount, T_profile as ArProfile }
 
 export default class Account {
   private arweave: Arweave;
   private ardb: ArDB;
+  private data: Data;
   private cache: Cache | null;
   private walletAddr: string | null = null;
 
@@ -31,6 +31,7 @@ export default class Account {
   } = {}) {
     this.arweave = Arweave.init(gateway);
     this.ardb = new ArDB(this.arweave);
+    this.data = new Data(gateway.host);
 
     if (cacheIsActivated) {
       if (typeof window !== 'undefined') {
@@ -45,12 +46,12 @@ export default class Account {
 
   async updateProfile(profile: T_profile) {
     if(!this.walletAddr) throw Error("Method connect() should be called before updateProfile().");
-    if(!isProfile(profile)) throw Error(`Object "${JSON.stringify(profile)}" doesn't match with the shape of a T_profile object.\nTypescript tip: import { T_profile } from 'arweave-account'`);
+    if(!this.data.isProfile(profile)) throw Error(`Object "${JSON.stringify(profile)}" doesn't match with the shape of a T_profile object.\nTypescript tip: import { T_profile } from 'arweave-account'`);
 
-    const data = JSON.stringify(encode(profile));
+    const data = JSON.stringify(this.data.encode(profile));
 
     const tx = await this.arweave.createTransaction({data});
-    tx.addTag("Protocol-Name", PROTOCOL_NAME);
+    tx.addTag("Protocol-Name", PROTOCOL_NAME[PROTOCOL_NAME.length-1]);
     tx.addTag("handle", profile.handleName);
 
     let result = tx
@@ -82,7 +83,7 @@ export default class Account {
     else {
       const tx: transaction[] | block[] = await this.ardb
         .search('transactions')
-        .tag('Protocol-Name', 'Account-0.2')
+        .tag('Protocol-Name', PROTOCOL_NAME)
         .from(addr)
         .limit(1)
         .find();
@@ -97,7 +98,7 @@ export default class Account {
           })
         ).data;
 
-        return decode(txid, addr, data); // return null if corrupted data 
+        return this.data.decode(txid, addr, data); // return null if corrupted data 
       } else return null; // no Account
     }
   }
@@ -105,7 +106,7 @@ export default class Account {
   async search(handle: string): Promise<T_account[]> {
     const txs: transaction[] | block[] = await this.ardb
       .search('transactions')
-      .tag('Protocol-Name', 'Account-0.2')
+      .tag('Protocol-Name', PROTOCOL_NAME)
       .tag('handle', handle)
       .limit(100)
       .find();
@@ -118,7 +119,7 @@ export default class Account {
           return { data: null };
         })
       ).data;
-      return decode(txid, addr, data);
+      return this.data.decode(txid, addr, data);
     });
 
     const accounts = await Promise.all(formattedAccounts);
@@ -141,7 +142,7 @@ export default class Account {
     else {
       const txs: transaction[] | block[] = await this.ardb
         .search('transactions')
-        .tag('Protocol-Name', 'Account-0.2')
+        .tag('Protocol-Name', PROTOCOL_NAME)
         .tag('handle', uniqueHandle.slice(0, -7))
         .limit(100)
         .find();
@@ -154,7 +155,7 @@ export default class Account {
             return { data: null };
           })
         ).data;
-        return decode(txid, addr, data);
+        return this.data.decode(txid, addr, data);
       });
 
       const a = await Promise.all(formattedAccounts);
