@@ -3,7 +3,8 @@ type T_txid = string;
 
 type T_profile = {
   handleName: string;
-  avatar?: T_txid;
+  avatar?: string;
+  readonly avatarURL?: string;
   name?: string;
   bio?: string;
   links: {
