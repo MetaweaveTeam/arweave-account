@@ -47,43 +47,43 @@ export default class Data {
    *  return null if data are corrupted 
    */
   decode(txid: T_txid, addr: T_addr, data: T_accountEncoded): T_account | null {
+    if(!this.isEncodedAccount(data))
+      return null;
+
     // Create a minimal account
     let account: T_account = {
       txid,
-      addr
+      addr,
+      handle: `${data.handle}#${addr.slice(0, 3)}${addr.slice(addr.length - 3)}`
     }
-    
+
     // Populate account from data
-    if(this.isEncodedAccount(data)) {
-      let profile: T_profile = {
-        handleName: data.handle,
-        links: {}
-      };
-      
-      if(data.avatar) profile = { 
-        ...profile,
-        avatar: data.avatar,
-        avatarURL: this.getURLfromURI(data.avatar)
-      };
-      if(data.banner) profile = { 
-        ...profile,
-        banner: data.banner,
-        bannerURL: this.getURLfromURI(data.banner)
-      };
-      if(data.name) profile = {...profile, name: data.name};
-      if(data.bio) profile = { ...profile, bio: data.bio };
-      if(data.links) profile = { ...profile, links: data.links };
-      if(data.wallets) profile = { ...profile, wallets: data.wallets };
-      
-      account = {
-        ...account,
-        handle: `${data.handle}#${addr.slice(0, 3)}${addr.slice(addr.length - 3)}`,
-        profile
-      };
-      
-      return account;
-    }
-    return null;
+    let profile: T_profile = {
+      handleName: data.handle,
+      links: {}
+    };
+    
+    if(data.avatar) profile = { 
+      ...profile,
+      avatar: data.avatar,
+      avatarURL: this.getURLfromURI(data.avatar)
+    };
+    if(data.banner) profile = { 
+      ...profile,
+      banner: data.banner,
+      bannerURL: this.getURLfromURI(data.banner)
+    };
+    if(data.name) profile = {...profile, name: data.name};
+    if(data.bio) profile = { ...profile, bio: data.bio };
+    if(data.links) profile = { ...profile, links: data.links };
+    if(data.wallets) profile = { ...profile, wallets: data.wallets };
+    
+    account = {
+      ...account,
+      profile
+    };
+    
+    return account;
   }
   
   isProfile(obj: any): obj is T_profile {

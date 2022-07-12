@@ -27,7 +27,7 @@ type T_profile = {
 type T_account = {
   readonly txid: T_txid;
   readonly addr: T_addr;
-  readonly handle?: string;
+  readonly handle: string;
   profile?: T_profile;
 };
 
