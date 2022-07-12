@@ -58,7 +58,6 @@ export default class Account {
     try {
       // @ts-ignore try bundlr first
       if(window.arweaveWallet){
-        console.log("using dispatch");
         // @ts-ignore try bundlr first
         result = await window.arweaveWallet.dispatch(tx);
       }
@@ -66,7 +65,6 @@ export default class Account {
         throw "no window.arweaveWallet";
     } catch (e) {
       try{
-        console.log("using arweave.transactions.post");
         await this.arweave.transactions.sign(tx);
         await this.arweave.transactions.post(tx);
       }

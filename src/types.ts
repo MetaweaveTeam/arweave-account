@@ -5,36 +5,51 @@ type T_profile = {
   handleName: string;
   avatar?: string;
   readonly avatarURL?: string;
+  banner?: string;
+  readonly bannerURL?: string;
   name?: string;
   bio?: string;
   links: {
     twitter?: string;
-    instagram?: string;
     github?: string;
-    facebook?: string;
+    instagram?: string;
     discord?: string;
+    facebook?: string;
+    linkedin?: string;
+    youtube?: string;
+    twitch?: string;
+  };
+  wallets?: {
+    eth?: string;
   }
 };
 
 type T_account = {
-  txid: T_txid;
-  addr: T_addr;
-  handle?: string;
+  readonly txid: T_txid;
+  readonly addr: T_addr;
+  readonly handle?: string;
   profile?: T_profile;
 };
 
 type T_accountEncoded = {
   handle: string;
   avatar?: string;
+  banner?: string;
   name?: string;
   bio?: string;
   links?: {
     twitter?: string;
-    instagram?: string;
     github?: string;
-    facebook?: string;
+    instagram?: string;
     discord?: string;
+    facebook?: string;
+    linkedin?: string;
+    youtube?: string;
+    twitch?: string;
   };
+  wallets?: {
+    eth?: string;
+  }
 }
 
 type T_item = {

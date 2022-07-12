@@ -29,9 +29,11 @@ export default class Data {
     
     let data: T_accountEncoded = { handle: profile.handleName };
     if(profile.avatar) data = {...data, avatar: profile.avatar };
+    if(profile.banner) data = {...data, banner: profile.banner };
     if(profile.name) data = {...data, name: profile.name };
     if(profile.bio) data = {...data, bio: profile.bio };
     if(profile.links) data = {...data, links: profile.links };
+    if(profile.wallets) data = {...data, wallets: profile.wallets };
     
     return data;
   }
@@ -58,14 +60,20 @@ export default class Data {
         links: {}
       };
       
-      if(data.name) profile = {...profile, name: data.name};
-      if(data.bio) profile = { ...profile, bio: data.bio };
       if(data.avatar) profile = { 
         ...profile,
         avatar: data.avatar,
         avatarURL: this.getURLfromURI(data.avatar)
       };
+      if(data.banner) profile = { 
+        ...profile,
+        banner: data.banner,
+        avatarURL: this.getURLfromURI(data.banner)
+      };
+      if(data.name) profile = {...profile, name: data.name};
+      if(data.bio) profile = { ...profile, bio: data.bio };
       if(data.links) profile = { ...profile, links: data.links };
+      if(data.wallets) profile = { ...profile, wallets: data.wallets };
       
       account = {
         ...account,

@@ -115,7 +115,10 @@ When getting account information, the library request the relevant transaction t
 | `bio`         | no   | Biography information |
 | `avatar`      | no   | picture URI of the user avatar [supporting multiple protocols](#avatar-and-banner-properties) |
 | `avatarURL`   | no   | Out of the box URL picture of the user avatar |
-| `links`       | yes  | Object of the user social links |
+| `banner`      | no   | picture URI of the user banner [supporting multiple protocols](#avatar-and-banner-properties) |
+| `bannerURL`   | no   | Out of the box URL picture of the user banner |
+| `links`       | yes  | user social links |
+| `wallets`     | yes  | user wallets from other blockchains |
 
 ## `avatar` and `banner` properties
 
@@ -149,15 +152,23 @@ Here is an exemple of an encoded and decoded account dataset for the wallet `aIU
 ```
 {
   "handle":"cromatikap",
-  "avatar":"xqjVvn9b8hmtDJhfVw80OZzAsn-ErpWbaFCPZWG5vKI"
+  "avatar": "ar://xqjVvn9b8hmtDJhfVw80OZzAsn-ErpWbaFCPZWG5vKI",
+  "banner": "ar://a0ieiziq2JkYhWamlrUCHxrGYnHWUAMcONxRmfkWt-k",
   "name":"Axel",
   "bio":"Founder of Metaweave.xyz\nI love dogs",
   "links": {
     "twitter":"cromatikap",
     "github":"cromatikap",
     "instagram":"cromatikap",
-    "discord":"cromatikap#6039"
+    "discord":"cromatikap#6039",
+    "linkedin": "",
+    "facebook": "",
+    "youtube": "",
+    "twitch": ""
   },
+  "wallets": {
+    eth: "0xeEEe8f7922E99ce6CEd5Cb2DaEdA5FE80Df7C95e"
+  }
 }
 ```
 
@@ -171,16 +182,26 @@ Here is the dataset you get by using the library
   "addr": "aIUmY9Iy4qoW3HOikTy6aJww-mM4Y-CUJ7mXoPdzdog",
   "handle": "cromatikap#aIUdog",
   "profile": {
-    "avatar": "xqjVvn9b8hmtDJhfVw80OZzAsn-ErpWbaFCPZWG5vKI",
-    "handleName": "cromatikap"
+    "avatar": "ar://xqjVvn9b8hmtDJhfVw80OZzAsn-ErpWbaFCPZWG5vKI",
+    "avatarURL": "https://arweave.net/xqjVvn9b8hmtDJhfVw80OZzAsn-ErpWbaFCPZWG5vKI",
+    "banner": "ar://a0ieiziq2JkYhWamlrUCHxrGYnHWUAMcONxRmfkWt-k",
+    "bannerURL": "https://arweave.net/a0ieiziq2JkYhWamlrUCHxrGYnHWUAMcONxRmfkWt-k",
+    "handleName": "cromatikap",
     "name": "Axel",
     "bio": "Founder of Metaweave.xyz\nI love dogs",
     "links": {
       "twitter": "cromatikap",
       "github": "cromatikap",
       "instagram": "cromatikap",
-      "discord": "cromatikap#6039"
+      "discord": "cromatikap#6039",
+      "linkedin": "",
+      "facebook": "",
+      "youtube": "",
+      "twitch": ""
     },
+    "wallets": {
+      eth: "0xeEEe8f7922E99ce6CEd5Cb2DaEdA5FE80Df7C95e"
+    }
   }
 }
 ```
