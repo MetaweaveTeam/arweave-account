@@ -15,8 +15,8 @@ export default class Data {
     if(/^[a-zA-Z0-9\-_]{43}$/.test(URI))
       return "https://" + this.gatewayHost + "/" + URI;
     // ar://<txid>
-    else if(ressource = URI.match(/^ar:\/\/[a-zA-Z0-9\-_]{43}$/))
-      return "https://" + this.gatewayHost + "/" + ressource;
+    else if(ressource = URI.match(/^ar:\/\/([a-zA-Z0-9\-_]{43})$/))
+      return "https://" + this.gatewayHost + "/" + ressource[1];
     // http URLs
     else if(/^https?:\/\/.+$/.test(URI))
       return URI;
@@ -68,7 +68,7 @@ export default class Data {
       if(data.banner) profile = { 
         ...profile,
         banner: data.banner,
-        avatarURL: this.getURLfromURI(data.banner)
+        bannerURL: this.getURLfromURI(data.banner)
       };
       if(data.name) profile = {...profile, name: data.name};
       if(data.bio) profile = { ...profile, bio: data.bio };
