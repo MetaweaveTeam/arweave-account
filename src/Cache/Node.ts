@@ -1,19 +1,28 @@
-import { T_account, T_addr, T_item } from '../types';
+import { ArAccount, T_addr, T_item } from '../types';
 import CacheAPI from './CacheAPI';
+import Data from '../data';
 
 export default class Memory implements CacheAPI {
   private store: Map<string, T_item> = new Map<string, T_item>();
   private expirationTime: number;
   private size: number;
+  private data: Data;
 
-  constructor(size: number, expirationTime: number) {
+  constructor(size: number, expirationTime: number, gatewayHost: string) {
     this.expirationTime = expirationTime;
     this.size = size;
+    this.data = new Data(gatewayHost);
   }
 
   get(addr: T_addr) {
     const item = this.store.get(addr);
-    if (item && Date.now() < item.timestamp + this.expirationTime) return this.store.get(addr)?.account;
+    if (item && Date.now() < item.timestamp + this.expirationTime){
+      const result = this.store.get(addr)?.account;
+      if(result)
+        return result;
+      else if(result === null)
+        return this.data.getDefaultAccount(addr);
+    }
   }
 
   find(uniqueHandle: string) {
@@ -23,7 +32,7 @@ export default class Memory implements CacheAPI {
     }
   }
 
-  hydrate(addr: T_addr, account?: T_account) {
+  hydrate(addr: T_addr, account?: ArAccount) {
     const item: T_item = {
       timestamp: Date.now(),
       addr,

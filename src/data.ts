@@ -1,5 +1,5 @@
-import { T_account, T_accountEncoded, T_addr, T_profile, T_txid } from "./types";
-import { DEFAULT_AVATAR_TXID } from "./config";
+import { ArAccount, ArAccountEncoded, T_addr, T_profile, T_txid } from "./types";
+import { DEFAULT_AVATAR_URI, DEFAULT_BANNER_URI } from "./config";
 
 export default class Data {
 
@@ -22,73 +22,85 @@ export default class Data {
       return URI;
     // corrupted data (default avatar)
     else
-      return "https://" + this.gatewayHost + "/" + DEFAULT_AVATAR_TXID;
+      return "https://" + this.gatewayHost + "/" + DEFAULT_AVATAR_URI;
+  }
+
+  private getUniqueHandle(addr: T_addr, handleName?: string) {
+    if(handleName && typeof handleName === 'string')
+      return `@${handleName}#${addr.slice(0, 3)}${addr.slice(addr.length - 3)}`;
+    else
+      return `${addr.slice(0, 5)}...${addr.slice(addr.length - 5)}`;
+  }
+
+  private isEncodedAccount(obj: any): obj is ArAccountEncoded {
+    return obj.handle !== undefined
+    && obj.handle.length > 0
+  }
+
+  isProfile(obj: any): obj is T_profile {
+    return obj.handleName !== undefined 
+    && obj.handleName.length > 0 
+    && obj.links !== undefined
+  }
+
+  getDefaultAccount(addr: T_addr): ArAccount {
+    return {
+      txid: null,
+      addr,
+      handle: this.getUniqueHandle(addr),
+      profile: {
+        handleName: "",
+        avatar: DEFAULT_AVATAR_URI,
+        avatarURL: this.getURLfromURI(DEFAULT_AVATAR_URI),
+        banner: DEFAULT_BANNER_URI,
+        bannerURL: this.getURLfromURI(DEFAULT_BANNER_URI),
+        name: "",
+        bio: "",
+        email: "",
+        links: {},
+        wallets: {}
+      }
+    }
   }
   
-  encode(profile: T_profile): T_accountEncoded | null {
+  encode(profile: T_profile): ArAccountEncoded | null {
     
-    let data: T_accountEncoded = { handle: profile.handleName };
+    let data: ArAccountEncoded = { handle: profile.handleName };
     if(profile.avatar) data = {...data, avatar: profile.avatar };
     if(profile.banner) data = {...data, banner: profile.banner };
     if(profile.name) data = {...data, name: profile.name };
     if(profile.bio) data = {...data, bio: profile.bio };
+    if(profile.email) data = {...data, email: profile.email };
     if(profile.links) data = {...data, links: profile.links };
     if(profile.wallets) data = {...data, wallets: profile.wallets };
     
     return data;
   }
   
-  isEncodedAccount(obj: any): obj is T_accountEncoded {
-    return obj.handle !== undefined
-    && obj.handle.length > 0
-  }
-  
   /*
-   *  return null if data are corrupted 
+   *  return default account object if no account or corrupted data 
    */
-  decode(txid: T_txid, addr: T_addr, data: T_accountEncoded): T_account | null {
-    if(!this.isEncodedAccount(data))
-      return null;
-
-    // Create a minimal account
-    let account: T_account = {
-      txid,
-      addr,
-      handle: `${data.handle}#${addr.slice(0, 3)}${addr.slice(addr.length - 3)}`
-    }
-
-    // Populate account from data
-    let profile: T_profile = {
-      handleName: data.handle,
-      links: {}
-    };
-    
-    if(data.avatar) profile = { 
-      ...profile,
-      avatar: data.avatar,
-      avatarURL: this.getURLfromURI(data.avatar)
-    };
-    if(data.banner) profile = { 
-      ...profile,
-      banner: data.banner,
-      bannerURL: this.getURLfromURI(data.banner)
-    };
-    if(data.name) profile = {...profile, name: data.name};
-    if(data.bio) profile = { ...profile, bio: data.bio };
-    if(data.links) profile = { ...profile, links: data.links };
-    if(data.wallets) profile = { ...profile, wallets: data.wallets };
-    
-    account = {
-      ...account,
-      profile
-    };
-    
-    return account;
-  }
-  
-  isProfile(obj: any): obj is T_profile {
-    return obj.handleName !== undefined 
-    && obj.handleName.length > 0 
-    && obj.links !== undefined
+  decode(txid: T_txid | null, addr: T_addr, data: ArAccountEncoded): ArAccount {
+    /* default account data */
+    return this.isEncodedAccount(data)
+      ? 
+      {
+        txid,
+        addr,
+        handle: this.getUniqueHandle(addr, data.handle),
+        profile: {
+          handleName: data.handle ? data.handle : "",
+          avatar: data.avatar ? data.avatar : DEFAULT_AVATAR_URI,
+          avatarURL: data.avatar ? this.getURLfromURI(data.avatar) : this.getURLfromURI(DEFAULT_AVATAR_URI),
+          banner: data.banner ? data.banner : DEFAULT_BANNER_URI,
+          bannerURL: data.banner ? this.getURLfromURI(data.banner) : this.getURLfromURI(DEFAULT_BANNER_URI),
+          name: data.name ? data.name : "",
+          bio: data.bio ? data.bio : "",
+          email: data.email ? data.email : "",
+          links: data.links ? data.links : {},
+          wallets: data.wallets ? data.wallets : {}
+        }
+      }
+      : this.getDefaultAccount(addr);
   }
 };

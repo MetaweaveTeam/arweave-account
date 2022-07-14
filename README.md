@@ -56,6 +56,22 @@ __Find user profile by wallet address & handle name__
 await account.find(handle#uniqID);
 ```
 
+## Example: Display user's avatar, handle name and bio
+
+```typescript
+import Account from 'arweave-account'
+
+const account = new Account()
+
+(async () => {
+  const user = await account.get(await arweaveWallet.getActiveAddress())
+
+  setHandle(user.handle);
+  setAvatar(user.profile.avatarURL);
+  setbio(user.profile.bio);
+})()
+```
+
 ## Creation/update flow
 
 With the 3 methods above, you are able to display any arweave account without requiring your user to even have an Arweave wallet. A [permanent application](https://github.com/MetaweaveTeam/Account) is available for your users to create and update their arweave account profile. Further more, we have made available a [redirection link](https://account.metaweave.xyz) that will bring your users to the latest deployed version of the permadapp. 
@@ -80,6 +96,27 @@ await account.updateProfile(profileObj);
 ```
 Make sure `connect()` is called before.
 
+## Example: Update user's handle name and bio
+
+If the user doesn't have an account, it will create it.
+
+```typescript
+import Account, {ArAccount} from 'arweave-account'
+
+const account = new Account()
+
+(async () => {
+  const user: ArAccount = await account.get(await arweaveWallet.getActiveAddress())
+
+  displayProfile(user.profile);
+
+  await account.connect();
+  user.profile.handleName = "DMac"
+  user.profile.bio = "Accelerating the worlds transition to decentralized messaging"
+  await account.updateProfile(user.profile)
+})()
+```
+
 ### Note
 
 The advanced usages are only compatible with wallets injecting the `arweaveWallet` object with [`dispatch()`](https://github.com/th8ta/ArConnect#dispatchtransaction-promisedispatchresult).
@@ -98,27 +135,27 @@ import { ArAccount, ArProfile } from 'arweave-account';
 
 When getting account information, the library request the relevant transaction through the gateway, decode the information stored and return an account object formatted the following way:
 
-| Property name | req. | description |
-| ------------- | ---  | ------------- |
-| `txid`        | yes  | Current transaction associated with the arweave account |
-| `addr`        | yes  | Wallet address of the arweave account |
-| `handle`      | yes  | Unique handle derived from `profile.handleName` and the wallet address |
-| `profile`     | yes  | Profile object |
-| `apps`        | no   | WIP from [this discussion](https://github.com/MetaweaveTeam/Account/issues/1): maybe named `storage`?  |
+| Property name | No account default value                     | description |
+| ------------- | -------------------------------------------- | ------------- |
+| `txid`        | `null`                                       | Current transaction associated with the arweave account |
+| `addr`        | `tx.owner.address`                           | Wallet address of the arweave account |
+| `handle`      | truncated wallet address (ex: `aIUm...zdog`) | Unique handle derived from `profile.handleName` and the wallet address (ex: `cromatikap#aIUdog`) |
+| `profile`     | -                                            | [ArProfile object](#arprofile-object) |
+| `apps`        | -                                            | WIP from [this discussion](https://github.com/MetaweaveTeam/Account/issues/1): maybe named `storage`?  |
 
 ### ArProfile object
 
-| Property name | req. | description |
-| ------------- | ---  | ------------- |
-| `handleName`  | yes  | The handle name chosen by the user, this is a required constituent of the generated account unique handle |
-| `name`        | no   | A secondary name |
-| `bio`         | no   | Biography information |
-| `avatar`      | no   | picture URI of the user avatar [supporting multiple protocols](#avatar-and-banner-properties) |
-| `avatarURL`   | no   | Out of the box URL picture of the user avatar |
-| `banner`      | no   | picture URI of the user banner [supporting multiple protocols](#avatar-and-banner-properties) |
-| `bannerURL`   | no   | Out of the box URL picture of the user banner |
-| `links`       | yes  | user social links |
-| `wallets`     | yes  | user wallets from other blockchains |
+| Property name | No account default value                     | description |
+| ------------- |-------------------------------------------- | ------------- |
+| `avatar`      | `"ar://OrG-ZG2WN3wdcwvpjz1ihPe4MI24QBJUpsJGIdL85wA"` | picture URI of the user avatar [supporting multiple protocols](#avatar-and-banner-properties) |
+| `avatarURL`   | `"https://arweave.net/OrG-ZG2WN3wdcwvpjz1ihPe4MI24QBJUpsJGIdL85wA"` | Out of the box URL picture of the user avatar |
+| `banner`      | `"ar://a0ieiziq2JkYhWamlrUCHxrGYnHWUAMcONxRmfkWt-k"`  | picture URI of the user banner [supporting multiple protocols](#avatar-and-banner-properties) |
+| `bannerURL`   | `"https://arweave.net/a0ieiziq2JkYhWamlrUCHxrGYnHWUAMcONxRmfkWt-k"`  | Out of the box URL picture of the user banner |
+| `handleName`  | `""` | The handle name chosen by the user, this is a required constituent to generate account unique handle |
+| `name`        | `""` | A secondary name |
+| `bio`         | `""` | Biography information |
+| `links`       | {}   | user social links |
+| `wallets`     | {}   | Other wallet addresses for crosschain identification |
 
 ## `avatar` and `banner` properties
 

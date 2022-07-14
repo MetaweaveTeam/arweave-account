@@ -1,13 +1,16 @@
-import { T_item, T_account, T_addr } from '../types';
+import { T_item, ArAccount, T_addr } from '../types';
 import Cache from './CacheAPI';
+import Data from '../data';
 
 export default class LocalStorage implements Cache {
   private expirationTime: number;
   private size: number;
+  private data: Data;
 
-  constructor(size: number, expirationTime: number) {
+  constructor(size: number, expirationTime: number, gatewayHost: string) {
     this.expirationTime = expirationTime;
     this.size = size;
+    this.data = new Data(gatewayHost);
 
     if (!localStorage.getItem('arweave-account')) localStorage.setItem('arweave-account', '[]');
   }
@@ -16,8 +19,12 @@ export default class LocalStorage implements Cache {
     // @ts-ignore localStorage is initialized in constructor
     const cache: T_item[] = JSON.parse(localStorage.getItem('arweave-account'));
 
-    return cache.find((item: T_item) => item.addr === addr && Date.now() < item.timestamp + this.expirationTime)
-      ?.account;
+    const result = cache.find((item: T_item) => item.addr === addr && Date.now() < item.timestamp + this.expirationTime)
+    ?.account
+    if(result)
+      return result;
+    else if(result === null)
+      return this.data.getDefaultAccount(addr);
   }
 
   find(uniqueHandle: string) {
@@ -33,7 +40,7 @@ export default class LocalStorage implements Cache {
   /*
    *  add or update an account timestamp
    */
-  hydrate(addr: T_addr, account?: T_account): void {
+  hydrate(addr: T_addr, account?: ArAccount): void {
     const item: T_item = {
       timestamp: Date.now(),
       addr,

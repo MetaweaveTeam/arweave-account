@@ -1,6 +1,6 @@
 import Arweave from 'arweave';
 import ArDB from 'ardb';
-import { T_account, T_addr, T_profile, T_txid } from './types';
+import { ArAccount, T_addr, T_profile, T_txid } from './types';
 import transaction from 'ardb/lib/models/transaction';
 import block from 'ardb/lib/models/block';
 import Cache from './Cache';
@@ -8,7 +8,7 @@ import { JWKInterface } from 'arweave/node/lib/wallet';
 import Data from './data';
 import { PROTOCOL_NAME } from './config';
 
-export { T_account as ArAccount, T_profile as ArProfile }
+export { ArAccount, T_profile as ArProfile }
 
 export default class Account {
   private arweave: Arweave;
@@ -35,8 +35,8 @@ export default class Account {
 
     if (cacheIsActivated) {
       if (typeof window !== 'undefined') {
-        this.cache = new Cache('web', cacheSize, cacheTime);
-      } else this.cache = new Cache('node', cacheSize, cacheTime);
+        this.cache = new Cache('web', cacheSize, cacheTime, gateway.host);
+      } else this.cache = new Cache('node', cacheSize, cacheTime, gateway.host);
     } else this.cache = null;
   }
 
@@ -74,10 +74,11 @@ export default class Account {
     return result;
   }
 
-  async get(addr: T_addr): Promise<T_account | null> {
+  async get(addr: T_addr): Promise<ArAccount> {
     addr = addr.trim();
+    if(!/^[a-zA-Z0-9\-_]{43}$/.test(addr)) throw "Invalid wallet address argument"
     const cacheResponse = this.cache?.get(addr);
-    if (cacheResponse !== undefined) return cacheResponse;
+    if (cacheResponse) return cacheResponse;
     else {
       const tx: transaction[] | block[] = await this.ardb
         .search('transactions')
@@ -88,20 +89,18 @@ export default class Account {
 
       const txid: T_txid | null = tx[0] ? tx[0].id : null;
 
-      if (txid) {
-        const data = (
-          await this.arweave.api.get(txid).catch(() => {
+      const data = txid
+        ? (await this.arweave.api.get(txid).catch(() => {
             this.cache?.hydrate(addr);
             return { data: null };
-          })
-        ).data;
+          })).data
+        : { data: null };
 
-        return this.data.decode(txid, addr, data); // return null if corrupted data 
-      } else return null; // no Account
+      return this.data.decode(txid, addr, data);
     }
   }
 
-  async search(handle: string): Promise<T_account[]> {
+  async search(handle: string): Promise<ArAccount[]> {
     const txs: transaction[] | block[] = await this.ardb
       .search('transactions')
       .tag('Protocol-Name', PROTOCOL_NAME)
@@ -123,14 +122,14 @@ export default class Account {
     const accounts = await Promise.all(formattedAccounts);
 
     return accounts.filter(
-      (v, i, a): v is T_account =>
+      (v, i, a): v is ArAccount =>
         v !== null &&
         // remove address duplicates: https://stackoverflow.com/a/56757215
         a.findIndex((t) => t?.addr === v?.addr) === i,
     );
   }
 
-  async find(uniqueHandle: string): Promise<T_account | null> {
+  async find(uniqueHandle: string): Promise<ArAccount | null> {
     uniqueHandle = uniqueHandle.trim();
     // check if format is handle#xxxxxx
     if (!/^(.+)#[a-zA-Z0-9\-\_]{6}$/.test(uniqueHandle)) return null;
@@ -157,7 +156,7 @@ export default class Account {
       });
 
       const a = await Promise.all(formattedAccounts);
-      const accounts = a.filter((e): e is T_account => e !== undefined);
+      const accounts = a.filter((e): e is ArAccount => e !== undefined);
 
       if (accounts.length > 0) {
         this.cache?.hydrate(accounts[0].addr, accounts[0]);
