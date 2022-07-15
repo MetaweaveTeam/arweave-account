@@ -11,6 +11,7 @@
   "scripts": {
     "test": "uvu -r tsm -r node-localstorage/register tests",
     "build": "tsc",
+    "build:browser": "npx browserify -r ./lib/index.js:Account > dist/bundle.js",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
     "lint": "tslint -p tsconfig.json"
   },
