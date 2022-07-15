@@ -56,8 +56,9 @@ export default class Account {
 
     let result = tx
     try {
-      // @ts-ignore try bundlr first
       if(window.arweaveWallet){
+        console.log(window.arweaveWallet);
+        
         // @ts-ignore try bundlr first
         result = await window.arweaveWallet.dispatch(tx);
       }
@@ -89,14 +90,18 @@ export default class Account {
 
       const txid: T_txid | null = tx[0] ? tx[0].id : null;
 
+      console.log("fdsfdsfds");
+      
+
       const data = txid
         ? (await this.arweave.api.get(txid).catch(() => {
-            this.cache?.hydrate(addr);
             return { data: null };
           })).data
         : { data: null };
 
-      return this.data.decode(txid, addr, data);
+      const accountObj = this.data.decode(txid, addr, data);
+      this.cache?.hydrate(addr, accountObj);
+      return accountObj;
     }
   }
 
