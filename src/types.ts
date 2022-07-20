@@ -3,7 +3,7 @@ type T_txid = string;
 
 type ArAccount = {
   readonly txid: T_txid | null;
-  readonly handle: string | null;
+  readonly handle: string;
   readonly addr: T_addr;
   profile: T_profile;
   wallets?: {
