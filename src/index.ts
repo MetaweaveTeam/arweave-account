@@ -48,7 +48,8 @@ export default class Account {
     if(!this.walletAddr) throw Error("Method connect() should be called before updateProfile().");
     if(!this.data.isProfile(profile)) throw Error(`Object "${JSON.stringify(profile)}" doesn't match with the shape of a T_profile object.\nTypescript tip: import { T_profile } from 'arweave-account'`);
 
-    const data = JSON.stringify(this.data.encode(profile));
+    const encodedAccount = this.data.encode(profile);
+    const data = JSON.stringify(encodedAccount);
 
     const tx = await this.arweave.createTransaction({data});
     tx.addTag("Protocol-Name", PROTOCOL_NAME[PROTOCOL_NAME.length-1]);
@@ -72,6 +73,11 @@ export default class Account {
       catch(e) { throw e; }
     }
 
+    if (encodedAccount) {
+      const accountObj = this.data.decode(tx.id, this.walletAddr, encodedAccount);
+      this.cache?.hydrate(this.walletAddr, accountObj);
+    }
+
     return result;
   }
 
@@ -89,10 +95,7 @@ export default class Account {
         .find();
 
       const txid: T_txid | null = tx[0] ? tx[0].id : null;
-
-      console.log("fdsfdsfds");
       
-
       const data = txid
         ? (await this.arweave.api.get(txid).catch(() => {
             return { data: null };
