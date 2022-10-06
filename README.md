@@ -45,12 +45,12 @@ If you're in for a deeper look at arweave account, you are at the right place
 ## Installation & Import
 
 __Installation__
-```
+```typescript
 npm install arweave-account
 ```
 
 __Usage__
-```
+```typescript
 import Account from 'arweave-account'
 
 const account = new Account();
@@ -61,17 +61,17 @@ If you are using Typescript, see [_typescript imports_](#typescript-imports) sec
 ## Basic usages
 
 __Get user profile by wallet address__
-```
+```typescript
 await account.get(walletAddr);
 ```
 
 __Search user profile by handle name__
-```
+```typescript
 await account.search(handle);
 ```
 
 __Find user profile by wallet address & handle name__
-```
+```typescript
 await account.find(handle#uniqID);
 ```
 
@@ -104,13 +104,13 @@ Although, if you want to implement your own onboarding flow right inside your ap
 ## Advanced usages
 
 __Connect the user wallet__
-```
+```typescript
 await account.connect(jwk?);
 ```
 If no argument is passed, account will use the injected `arweaveWallet` object. In that case, make sure you have handled the wallet connection flow with the right permissions before calling this method to avoid any unexpected behavior. 
 
 __Create/update arweave account profile__
-```
+```typescript
 await account.updateProfile(profileObj);
 ```
 Make sure `connect()` is called before.
