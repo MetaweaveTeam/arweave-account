@@ -1,16 +1,34 @@
 # Arweave Account
 
-This npm package is paired with the permadapp [Account](https://github.com/MetaweaveTeam/Account).
+> ℹ️ This npm package is paired with the permadapp [Account](https://github.com/MetaweaveTeam/Account).
 
-Arweave accounts rely on the native gateways operations to write and retrieve users data.
+Arweave Account is a composible and customizable profile protocol (DID) on Arweave. It relies on the native gateways operations to write and retrieve users data.
 
-# Development
+## Who uses it?
+
+Here is some example of the same profile displayed by different applications in the ecosystem:
+
+| PermaDapp | visual |
+|---|---|
+| [now](https://now.arweave.dev) | <img width="321" alt="Screenshot 2022-10-06 at 20 31 25" src="https://user-images.githubusercontent.com/7074019/194403612-a3da8a4a-b580-41d8-8c8a-125725b9225b.png"> |
+| [Permanotes](https://permanotes.app) | <img width="378" alt="Screenshot 2022-10-06 at 20 30 00" src="https://user-images.githubusercontent.com/7074019/194403578-a12132f6-2a22-4e60-8333-2e737b34be0f.png"> |
+| [Metaweave](https://r.metaweave.xyz/u/aIUmY9Iy4qoW3HOikTy6aJww-mM4Y-CUJ7mXoPdzdog) | <img width="606" alt="Screenshot 2022-10-06 at 20 32 08" src="https://user-images.githubusercontent.com/7074019/194403544-a473f181-32c4-4723-8cbc-67051b9cc819.png"> |
+
+> ℹ️ ❕
+>
+> __Do you know an application using Arweave Account? Feel free to add it to the list via a PR ❤️__
+
+-----
+
+# Documentation
 
 > ℹ️ If it's your first time trying `arweave-account`, __we recommend to try the [interactive documentation](https://account.metaweave.xyz)__.
 
 If you're in for a deeper look at arweave account, you are at the right place
 
-- [Development](#development)
+- [Arweave Account](#arweave-account)
+  - [Who uses it?](#who-uses-it)
+- [Documentation](#documentation)
   - [Installation & Import](#installation--import)
   - [Basic usages](#basic-usages)
   - [Creation/update flow](#creationupdate-flow)
