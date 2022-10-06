@@ -20,7 +20,8 @@ If you're in for a deeper look at arweave account, you are at the right place
     - [ArAccount object](#araccount-object)
     - [ArProfile object](#arprofile-object)
     - [`avatar` and `banner` properties](#avatar-and-banner-properties)
-- [Architecture](#architecture)
+- [Data protocol](#data-protocol)
+- [Data architecture](#data-architecture)
 - [Migrate from 1.2.5 to 1.3.x](#migrate-from-125-to-13x)
 
 ## Installation & Import
@@ -178,7 +179,40 @@ For example:
 | `profile.avatar`    | ar://xqjVvn9b8hmtDJhfVw80OZzAsn-ErpWbaFCPZWG5vKI                |
 | `profile.avatarURL` | https://arweave.net/xqjVvn9b8hmtDJhfVw80OZzAsn-ErpWbaFCPZWG5vKI |
 
-# Architecture
+# Data protocol
+
+Account is a simple native data protocol on Arweave. It consists of a simple transaction containing the latest data state. A wallet key is attached to its own latest write with the tag `Protocol-Name: 'Account-<version>'`
+
+__Exemple__: 
+
+Request the latest updated account profile using [ArQL](https://www.npmjs.com/package/ar-gql)
+```gql
+{
+  transactions(
+    first: 1
+    tags: [{name:"Protocol-Name",values:"Account-0.2"}]
+  ) {
+    edges {
+      node {
+        id
+        owner {
+          key
+          address
+        }
+        tags {
+          name
+          value
+        }
+        block {
+          timestamp
+        }
+      }
+    }
+  }
+}
+```
+
+# Data architecture
 
 In the arweave account protocol, a set of data representing the user profile is encoded to be stored in a transaction and decoded to a `ArAccount` type object.
 
@@ -186,7 +220,7 @@ Here is an exemple of an encoded and decoded account dataset for the wallet `aIU
 
 ## Encoded arweave account data (written on-chain)
 
-```
+```json
 {
   "handle":"cromatikap",
   "avatar": "ar://xqjVvn9b8hmtDJhfVw80OZzAsn-ErpWbaFCPZWG5vKI",
@@ -204,7 +238,7 @@ Here is an exemple of an encoded and decoded account dataset for the wallet `aIU
     "twitch": ""
   },
   "wallets": {
-    eth: "0xeEEe8f7922E99ce6CEd5Cb2DaEdA5FE80Df7C95e"
+    "eth": "0xeEEe8f7922E99ce6CEd5Cb2DaEdA5FE80Df7C95e"
   }
 }
 ```
@@ -213,7 +247,7 @@ Here is an exemple of an encoded and decoded account dataset for the wallet `aIU
 
 Here is the dataset you get by using the library
 
-```
+```json
 {
   "txid": "NPJJoq-9EwUeAce_bSbSyqICaGs4_7Hg6VxCyoCY8UQ",
   "addr": "aIUmY9Iy4qoW3HOikTy6aJww-mM4Y-CUJ7mXoPdzdog",
@@ -237,7 +271,7 @@ Here is the dataset you get by using the library
       "twitch": ""
     },
     "wallets": {
-      eth: "0xeEEe8f7922E99ce6CEd5Cb2DaEdA5FE80Df7C95e"
+      "eth": "0xeEEe8f7922E99ce6CEd5Cb2DaEdA5FE80Df7C95e",
     }
   }
 }
