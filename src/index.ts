@@ -1,6 +1,6 @@
 import Arweave from 'arweave';
 import ArDB from 'ardb';
-import { ArAccount, T_addr, T_profile, T_txid } from './types';
+import { ArAccount, T_addr, T_profile, T_txid, GatewayConfig } from './types';
 import transaction from 'ardb/lib/models/transaction';
 import block from 'ardb/lib/models/block';
 import Cache from './Cache';
@@ -21,7 +21,7 @@ export default class Account {
     cacheIsActivated = true,
     cacheSize = 100,
     cacheTime = 60000,
-    gateway = {
+    gateway = <GatewayConfig>{
       host: 'arweave.net', // Hostname or IP address for a Arweave host
       port: 443, // Port
       protocol: 'https', // Network protocol http or https
@@ -31,12 +31,12 @@ export default class Account {
   } = {}) {
     this.arweave = Arweave.init(gateway);
     this.ardb = new ArDB(this.arweave);
-    this.data = new Data(gateway.host);
+    this.data = new Data(gateway);
 
     if (cacheIsActivated) {
       if (typeof window !== 'undefined') {
-        this.cache = new Cache('web', cacheSize, cacheTime, gateway.host);
-      } else this.cache = new Cache('node', cacheSize, cacheTime, gateway.host);
+        this.cache = new Cache('web', cacheSize, cacheTime, gateway);
+      } else this.cache = new Cache('node', cacheSize, cacheTime, gateway);
     } else this.cache = null;
   }
 
@@ -164,12 +164,13 @@ export default class Account {
       });
 
       const a = await Promise.all(formattedAccounts);
-      const accounts = a.filter((e): e is ArAccount => e !== undefined);
-
-      if (accounts.length > 0) {
-        this.cache?.hydrate(accounts[0].addr, accounts[0]);
-        return accounts[0];
-      } else return null;
+      const accounts = a.filter((e): e is ArAccount => e !== undefined)
+      accounts.forEach(ac => { 
+        console.log(ac);
+        this.cache?.hydrate(ac.addr, ac); 
+      });
+      const result = accounts.find(ac => ac.handle.includes(uniqueHandle));
+      return result || null;
     }
   }
 

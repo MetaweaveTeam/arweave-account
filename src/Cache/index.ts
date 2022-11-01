@@ -1,5 +1,5 @@
 import CacheAPI from './CacheAPI';
-import { ArAccount, T_addr } from '../types';
+import { ArAccount, GatewayConfig, T_addr } from '../types';
 import LocalStorage from './Web';
 import Memory from './Node';
 
@@ -7,12 +7,12 @@ export default class Cache implements CacheAPI {
   private cacheObj: { [K: string]: () => any } | CacheAPI;
   private size: number;
   private expirationTime: number;
-  private gatewayHost: string;
+  private gatewayConfig: GatewayConfig;
 
-  constructor(env: string | CacheAPI, size: number, expirationTime: number, gatewayHost: string) {
+  constructor(env: string | CacheAPI, size: number, expirationTime: number, gatewayConfig:GatewayConfig) {
     this.size = size;
     this.expirationTime = expirationTime;
-    this.gatewayHost = gatewayHost;
+    this.gatewayConfig = gatewayConfig;
 
     if (typeof env === 'object') this.cacheObj = env;
     else if (this.select[env]) this.cacheObj = this.select[env]();
@@ -21,8 +21,8 @@ export default class Cache implements CacheAPI {
 
   // Environments list
   private select: { [K: string]: () => any } = {
-    web: () => new LocalStorage(this.size, this.expirationTime, this.gatewayHost),
-    node: () => new Memory(this.size, this.expirationTime, this.gatewayHost),
+    web: () => new LocalStorage(this.size, this.expirationTime, this.gatewayConfig),
+    node: () => new Memory(this.size, this.expirationTime, this.gatewayConfig),
   };
 
   public get = (addr: string): ArAccount | undefined => this.cacheObj.get(addr);

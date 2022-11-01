@@ -11,6 +11,14 @@ type ArAccount = {
   }
 };
 
+type GatewayConfig = {
+  host: string;
+  port: number;
+  protocol: string;
+  timeout: number;
+  logging: boolean;
+}
+
 type T_profile = {
   handleName: string;
   avatar: string;
@@ -63,4 +71,4 @@ type T_item = {
   account: ArAccount | null;
 };
 
-export type { T_addr, T_txid, T_profile, ArAccount, T_item, ArAccountEncoded };
+export type { T_addr, T_txid, T_profile, ArAccount, T_item, ArAccountEncoded, GatewayConfig };

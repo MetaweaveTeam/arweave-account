@@ -1,28 +1,29 @@
-import { ArAccount, ArAccountEncoded, T_addr, T_profile, T_txid } from "./types";
+import { ArAccount, ArAccountEncoded, GatewayConfig, T_addr, T_profile, T_txid } from "./types";
 import { DEFAULT_AVATAR_URI, DEFAULT_BANNER_URI } from "./config";
 
 export default class Data {
 
-  private gatewayHost: string;
+  private gatewayConfig: GatewayConfig;
 
-  constructor(gatewayHost: string) {
-    this.gatewayHost = gatewayHost;
+  constructor(gatewayConfig: GatewayConfig) {
+    this.gatewayConfig = gatewayConfig;
   }
 
   private getURLfromURI(URI: string) {
     let ressource;
+    const gc = this.gatewayConfig;
     // Look for simple txids to be compatible with arweave account protocol v0.2
     if(/^[a-zA-Z0-9\-_]{43}$/.test(URI))
-      return "https://" + this.gatewayHost + "/" + URI;
+      return `${gc.protocol}://${gc.host}:${gc.port}/${URI}`;
     // ar://<txid>
     else if(ressource = URI.match(/^ar:\/\/([a-zA-Z0-9\-_]{43})$/))
-      return "https://" + this.gatewayHost + "/" + ressource[1];
+      return `${gc.protocol}://${gc.host}:${gc.port}/${ressource[1]}`;
     // http URLs
     else if(/^https?:\/\/.+$/.test(URI))
       return URI;
     // corrupted data (default avatar)
     else
-      return "https://" + this.gatewayHost + "/" + DEFAULT_AVATAR_URI;
+      return `${gc.protocol}://${gc.host}:${gc.port}/${DEFAULT_AVATAR_URI}`;
   }
 
   private getUniqueHandle(addr: T_addr, handleName?: string) {

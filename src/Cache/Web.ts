@@ -1,4 +1,4 @@
-import { T_item, ArAccount, T_addr } from '../types';
+import { T_item, ArAccount, T_addr, GatewayConfig } from '../types';
 import Cache from './CacheAPI';
 import Data from '../data';
 
@@ -7,10 +7,10 @@ export default class LocalStorage implements Cache {
   private size: number;
   private data: Data;
 
-  constructor(size: number, expirationTime: number, gatewayHost: string) {
+  constructor(size: number, expirationTime: number, gatewayConfig: GatewayConfig) {
     this.expirationTime = expirationTime;
     this.size = size;
-    this.data = new Data(gatewayHost);
+    this.data = new Data(gatewayConfig);
 
     if (!localStorage.getItem('arweave-account')) localStorage.setItem('arweave-account', '[]');
   }

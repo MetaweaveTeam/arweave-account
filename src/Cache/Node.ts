@@ -1,4 +1,4 @@
-import { ArAccount, T_addr, T_item } from '../types';
+import { ArAccount, GatewayConfig, T_addr, T_item } from '../types';
 import CacheAPI from './CacheAPI';
 import Data from '../data';
 
@@ -8,10 +8,10 @@ export default class Memory implements CacheAPI {
   private size: number;
   private data: Data;
 
-  constructor(size: number, expirationTime: number, gatewayHost: string) {
+  constructor(size: number, expirationTime: number, gatewayConfig: GatewayConfig) {
     this.expirationTime = expirationTime;
     this.size = size;
-    this.data = new Data(gatewayHost);
+    this.data = new Data(gatewayConfig);
   }
 
   get(addr: T_addr) {
