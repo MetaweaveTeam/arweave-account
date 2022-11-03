@@ -1,6 +1,7 @@
 import Arweave from 'arweave';
+import { ApiConfig as GatewayConfig } from 'arweave/node/lib/api';
 import ArDB from 'ardb';
-import { ArAccount, T_addr, T_profile, T_txid, GatewayConfig } from './types';
+import { ArAccount, T_addr, T_profile, T_txid } from './types';
 import transaction from 'ardb/lib/models/transaction';
 import block from 'ardb/lib/models/block';
 import Cache from './Cache';

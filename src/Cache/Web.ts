@@ -1,4 +1,5 @@
-import { T_item, ArAccount, T_addr, GatewayConfig } from '../types';
+import { T_item, ArAccount, T_addr } from '../types';
+import { ApiConfig as GatewayConfig } from 'arweave/node/lib/api';
 import Cache from './CacheAPI';
 import Data from '../data';
 

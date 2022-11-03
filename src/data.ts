@@ -1,4 +1,5 @@
-import { ArAccount, ArAccountEncoded, GatewayConfig, T_addr, T_profile, T_txid } from "./types";
+import { ArAccount, ArAccountEncoded, T_addr, T_profile, T_txid } from "./types";
+import { ApiConfig as GatewayConfig } from 'arweave/node/lib/api';
 import { DEFAULT_AVATAR_URI, DEFAULT_BANNER_URI } from "./config";
 
 export default class Data {
