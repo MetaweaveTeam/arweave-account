@@ -3,7 +3,7 @@
 
 Arweave 帐户是 Arweave 上一个可组合和可定制的配置文件协议（DID）。它依赖于本地网关的操作来写入和检索用户数据。
 
-## 谁使用它?
+## 谁使用它
 以下是生态系统中不同应用程序显示的相同配置文件的一些示例：
 
 | PermaDapp | visual |
@@ -22,11 +22,11 @@ Arweave 帐户是 Arweave 上一个可组合和可定制的配置文件协议（
 
 如果您想更深入地了解 arweave 帐户，那么您来对地方了
 - [Arweave 账户](#Arweave账户)
-    - [谁使用它?](#谁使用它?)
+    - [谁使用它?](#谁使用它)
 - [文档](#文档)
     - [安装和导入](#安装和导入)
     - [基本用法](#基本用法)
-    - [创建/更新流程](#创建/更新流程)
+    - [创建/更新流程](#创建更新流程)
     - [高级用法](#高级用法)
     - [参考](#参考)
         - [Typescript导入](#Typescript导入)
@@ -83,7 +83,7 @@ const account = new Account()
 ```
 ##
 
-## 创建/更新流程
+## 创建更新流程
 
 使用上述 3 种方法，您可以显示任何 arweave 帐户，甚至不需要您的用户拥有 Arweave 的钱包。
 您的用户可以使用[永久应用程序](https://github.com/MetaweaveTeam/Account) 来创建和更新他们的 arweave 帐户资料。
@@ -142,12 +142,12 @@ const account = new Account()
 
 ## 参考
 
-**Typescript导入**
+### Typescript导入
 
 ```typescript
 import { ArAccount, ArProfile } from 'arweave-account';
 ```
-**Ar账户对象**
+### Ar账户对象
 
 当获取帐户信息时，库通过网关请求相关事务，对存储的信息进行解码，并返回按以下方式格式化的帐户对象：
 
@@ -160,7 +160,7 @@ import { ArAccount, ArProfile } from 'arweave-account';
 | profile | - | [Ar 资料对象](https://github.com/MetaweaveTeam/arweave-account#arprofile-object) |
 | apps | - | [issue](https://github.com/MetaweaveTeam/Account/issues/1) 中的 WIP : 也许命名为 storage? |
 
-**Ar资料对象**   
+### Ar资料对象  
 
 | 属性名词 | 无账户默认值 | 描述 |
 | --- | --- | --- |
@@ -174,7 +174,7 @@ import { ArAccount, ArProfile } from 'arweave-account';
 | links | {} | 用户社交联系 |
 | wallets | {} | 其他用于跨链识别的钱包地址 |
 
-## avatar和banner属性
+### avatar和banner属性
 
 avatar 和 banner 等图像属性可以引用来自不同链的 NFT。支持以下协议：
 
