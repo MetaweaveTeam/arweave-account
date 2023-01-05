@@ -1,5 +1,5 @@
 # Arweave Account
-
+[中文版](README_ZH.md)
 > ℹ️ This npm package is paired with the permadapp [Account](https://github.com/MetaweaveTeam/Account).
 
 Arweave Account is a composible and customizable profile protocol (DID) on Arweave. It relies on the native gateways operations to write and retrieve users data.
