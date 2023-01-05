@@ -1,5 +1,5 @@
 # Arweave账户
-> ℹ️ 此 npm 包与 permadapp [帐户](https://github.com/MetaweaveTeam/Account)
+> ℹ️ 此 npm 包与 permadapp [帐户](https://github.com/MetaweaveTeam/Account) 配对
 
 Arweave 帐户是 Arweave 上一个可组合和可定制的配置文件协议（DID）。它依赖于本地网关的操作来写入和检索用户数据。
 
