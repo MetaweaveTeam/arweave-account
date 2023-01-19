@@ -9,7 +9,7 @@ import { JWKInterface } from 'arweave/node/lib/wallet';
 import Data from './data';
 import { PROTOCOL_NAME } from './config';
 
-export { ArAccount, T_profile as ArProfile }
+export { ArAccount, T_profile as ArProfile };
 
 export default class Account {
   private arweave: Arweave;
@@ -41,37 +41,39 @@ export default class Account {
     } else this.cache = null;
   }
 
-  async connect(jwk: JWKInterface | "use_wallet" = "use_wallet") {
+  async connect(jwk: JWKInterface | 'use_wallet' = 'use_wallet') {
     this.walletAddr = await this.arweave.wallets.getAddress(jwk);
   }
 
   async updateProfile(profile: T_profile) {
-    if(!this.walletAddr) throw Error("Method connect() should be called before updateProfile().");
-    if(!this.data.isProfile(profile)) throw Error(`Object "${JSON.stringify(profile)}" doesn't match with the shape of a T_profile object.\nTypescript tip: import { T_profile } from 'arweave-account'`);
+    if (!this.walletAddr) throw Error('Method connect() should be called before updateProfile().');
+    if (!this.data.isProfile(profile))
+      throw Error(
+        `Object "${JSON.stringify(
+          profile,
+        )}" doesn't match with the shape of a T_profile object.\nTypescript tip: import { T_profile } from 'arweave-account'`,
+      );
 
     const encodedAccount = this.data.encode(profile);
     const data = JSON.stringify(encodedAccount);
 
-    const tx = await this.arweave.createTransaction({data});
-    tx.addTag("Protocol-Name", PROTOCOL_NAME[PROTOCOL_NAME.length-1]);
-    tx.addTag("handle", profile.handleName);
+    const tx = await this.arweave.createTransaction({ data });
+    tx.addTag('Protocol-Name', PROTOCOL_NAME[PROTOCOL_NAME.length - 1]);
+    tx.addTag('handle', profile.handleName);
 
-    let result = tx
+    let result = tx;
     try {
-      if(window.arweaveWallet){
-        console.log(window.arweaveWallet);
-        
+      if (window.arweaveWallet) {
         // @ts-ignore try bundlr first
         result = await window.arweaveWallet.dispatch(tx);
-      }
-      else
-        throw "no window.arweaveWallet";
+      } else throw 'no window.arweaveWallet';
     } catch (e) {
-      try{
+      try {
         await this.arweave.transactions.sign(tx);
         await this.arweave.transactions.post(tx);
+      } catch (e) {
+        throw e;
       }
-      catch(e) { throw e; }
     }
 
     if (encodedAccount) {
@@ -84,7 +86,7 @@ export default class Account {
 
   async get(addr: T_addr): Promise<ArAccount> {
     addr = addr.trim();
-    if(!/^[a-zA-Z0-9\-_]{43}$/.test(addr)) throw "Invalid wallet address argument"
+    if (!/^[a-zA-Z0-9\-_]{43}$/.test(addr)) throw 'Invalid wallet address argument';
     const cacheResponse = this.cache?.get(addr);
     if (cacheResponse) return cacheResponse;
     else {
@@ -96,16 +98,23 @@ export default class Account {
         .find();
 
       const txid: T_txid | null = tx[0] ? tx[0].id : null;
-      
+
       const data = txid
-        ? (await this.arweave.api.get(txid).catch(() => {
-            return { data: null };
-          })).data
+        ? (
+            await this.arweave.api.get(txid).catch(() => {
+              return { data: null };
+            })
+          ).data
         : { data: null };
 
-      const accountObj = this.data.decode(txid, addr, data);
-      this.cache?.hydrate(addr, accountObj);
-      return accountObj;
+      try {
+        const accountObj = this.data.decode(txid, addr, JSON.parse(data));
+        this.cache?.hydrate(addr, accountObj);
+        return accountObj;
+      } catch (e) {
+        // if JSON.parse(data) throw an error because data is not a valid JSON
+        return this.data.getDefaultAccount(addr);
+      }
     }
   }
 
@@ -125,7 +134,15 @@ export default class Account {
           return { data: null };
         })
       ).data;
-      return this.data.decode(txid, addr, data);
+
+      try {
+        const accountObj = this.data.decode(txid, addr, JSON.parse(data));
+        this.cache?.hydrate(addr, accountObj);
+        return accountObj;
+      } catch (e) {
+        // if JSON.parse(data) throw an error because data is not a valid JSON
+        return this.data.getDefaultAccount(addr);
+      }
     });
 
     const accounts = await Promise.all(formattedAccounts);
@@ -161,16 +178,24 @@ export default class Account {
             return { data: null };
           })
         ).data;
-        return this.data.decode(txid, addr, data);
+
+        try {
+          const accountObj = this.data.decode(txid, addr, JSON.parse(data));
+          this.cache?.hydrate(addr, accountObj);
+          return accountObj;
+        } catch (e) {
+          // if JSON.parse(data) throw an error because data is not a valid JSON
+          return this.data.getDefaultAccount(addr);
+        }
       });
 
       const a = await Promise.all(formattedAccounts);
-      const accounts = a.filter((e): e is ArAccount => e !== undefined)
-      accounts.forEach(ac => { 
+      const accounts = a.filter((e): e is ArAccount => e !== undefined);
+      accounts.forEach((ac) => {
         console.log(ac);
-        this.cache?.hydrate(ac.addr, ac); 
+        this.cache?.hydrate(ac.addr, ac);
       });
-      const result = accounts.find(ac => ac.handle.includes(uniqueHandle));
+      const result = accounts.find((ac) => ac.handle.includes(uniqueHandle));
       return result || null;
     }
   }
