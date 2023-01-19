@@ -103,9 +103,14 @@ export default class Account {
           })).data
         : { data: null };
 
-      const accountObj = this.data.decode(txid, addr, data);
-      this.cache?.hydrate(addr, accountObj);
-      return accountObj;
+      try{
+        const accountObj = this.data.decode(txid, addr, JSON.parse(data));
+        this.cache?.hydrate(addr, accountObj);
+        return accountObj;
+      }
+      catch(e) { // if JSON.parse(data) throw an error because data is not a valid JSON
+        return this.data.getDefaultAccount(addr)
+      }
     }
   }
 

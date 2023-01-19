@@ -40,7 +40,7 @@
     "uvu": "^0.5.3"
   },
   "dependencies": {
-    "ardb": "^1.1.10",
-    "arweave": "^1.10.23"
+    "ardb": "https://github.com/cromatikap/ardb.git",
+    "arweave": "^1.12.2"
   }
 }
