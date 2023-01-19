@@ -192,7 +192,6 @@ export default class Account {
       const a = await Promise.all(formattedAccounts);
       const accounts = a.filter((e): e is ArAccount => e !== undefined);
       accounts.forEach((ac) => {
-        console.log(ac);
         this.cache?.hydrate(ac.addr, ac);
       });
       const result = accounts.find((ac) => ac.handle.includes(uniqueHandle));
