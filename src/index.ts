@@ -92,6 +92,7 @@ export default class Account {
     else {
       const tx: transaction[] | block[] = await this.ardb
         .search('transactions')
+        .exclude('anchor')
         .tag('Protocol-Name', PROTOCOL_NAME)
         .from(addr)
         .limit(1)
@@ -121,6 +122,7 @@ export default class Account {
   async search(handle: string): Promise<ArAccount[]> {
     const txs: transaction[] | block[] = await this.ardb
       .search('transactions')
+      .exclude('anchor')
       .tag('Protocol-Name', PROTOCOL_NAME)
       .tag('handle', handle)
       .limit(100)
@@ -165,6 +167,7 @@ export default class Account {
     else {
       const txs: transaction[] | block[] = await this.ardb
         .search('transactions')
+        .exclude('anchor')
         .tag('Protocol-Name', PROTOCOL_NAME)
         .tag('handle', uniqueHandle.slice(0, -7))
         .limit(100)
