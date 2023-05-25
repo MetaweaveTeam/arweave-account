@@ -99,7 +99,7 @@ export default class Account {
         .find();
 
       const txid: T_txid | null = tx[0] ? tx[0].id : null;
-
+  console.log(txid)
       const data = txid
         ? (
             await this.arweave.api.get(txid).catch(() => {
