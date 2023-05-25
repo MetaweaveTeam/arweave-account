@@ -110,7 +110,7 @@ export default class Account {
 
       try {
  console.log(data)
-        const accountObj = this.data.decode(txid, addr, JSON.parse(data));
+        const accountObj = this.data.decode(txid, addr, data);
         console.log(accountObj)
         this.cache?.hydrate(addr, accountObj);
         return accountObj;
