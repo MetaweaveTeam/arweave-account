@@ -109,7 +109,9 @@ export default class Account {
         : { data: null };
 
       try {
+
         const accountObj = this.data.decode(txid, addr, JSON.parse(data));
+        console.log(data,accountObj)
         this.cache?.hydrate(addr, accountObj);
         return accountObj;
       } catch (e) {
