@@ -99,7 +99,6 @@ export default class Account {
         .find();
 
       const txid: T_txid | null = tx[0] ? tx[0].id : null;
-  console.log(txid)
       const data = txid
         ? (
             await this.arweave.api.get(txid).catch(() => {
@@ -109,9 +108,7 @@ export default class Account {
         : { data: null };
 
       try {
- console.log(data)
         const accountObj = this.data.decode(txid, addr, data);
-        console.log(accountObj)
         this.cache?.hydrate(addr, accountObj);
         return accountObj;
       } catch (e) {
