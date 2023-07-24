@@ -100,16 +100,9 @@ export default class Account {
 
       const txid: T_txid | null = tx[0] ? tx[0].id : null;
 
-      const data = txid
-        ? (
-            await this.arweave.api.get(txid).catch(() => {
-              return { data: null };
-            })
-          ).data
-        : { data: null };
-
       try {
-        const accountObj = this.data.decode(txid, addr, JSON.parse(data));
+        const { data } = txid ? await this.arweave.api.get(txid) : { data: null };
+        const accountObj = this.data.decode(txid, addr, data);
         this.cache?.hydrate(addr, accountObj);
         return accountObj;
       } catch (e) {
@@ -131,14 +124,10 @@ export default class Account {
     const formattedAccounts = txs.map(async (tx) => {
       const txid: T_txid = tx.id;
       const addr = 'owner' in tx ? tx.owner.address : 'anonymous';
-      const data = (
-        await this.arweave.api.get(txid).catch(() => {
-          return { data: null };
-        })
-      ).data;
 
       try {
-        const accountObj = this.data.decode(txid, addr, JSON.parse(data));
+        const { data } = await this.arweave.api.get(txid);
+        const accountObj = this.data.decode(txid, addr, data);
         this.cache?.hydrate(addr, accountObj);
         return accountObj;
       } catch (e) {
@@ -176,14 +165,10 @@ export default class Account {
       const formattedAccounts = txs.map(async (tx) => {
         const txid: T_txid = tx.id;
         const addr = 'owner' in tx ? tx.owner.address : 'anonymous';
-        const data = (
-          await this.arweave.api.get(txid).catch(() => {
-            return { data: null };
-          })
-        ).data;
 
         try {
-          const accountObj = this.data.decode(txid, addr, JSON.parse(data));
+          const { data } = await this.arweave.api.get(txid);
+          const accountObj = this.data.decode(txid, addr, data);
           this.cache?.hydrate(addr, accountObj);
           return accountObj;
         } catch (e) {
