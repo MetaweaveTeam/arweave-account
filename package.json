@@ -41,6 +41,6 @@
   },
   "dependencies": {
     "ardb": "^1.1.10",
-    "arweave": "^1.12.4"
+    "arweave": "^1.14.0"
   }
 }
