@@ -1,7 +1,7 @@
 import Arweave from 'arweave';
 import { ApiConfig as GatewayConfig } from 'arweave/node/lib/api';
 import ArDB from 'ardb';
-import { ArAccount, T_addr, T_profile, T_txid } from './types';
+import { ArAccount, T_addr, T_profile, T_tags, T_txid } from './types';
 import transaction from 'ardb/lib/models/transaction';
 import block from 'ardb/lib/models/block';
 import Cache from './Cache';
@@ -45,7 +45,7 @@ export default class Account {
     this.walletAddr = await this.arweave.wallets.getAddress(jwk);
   }
 
-  async updateProfile(profile: T_profile) {
+  async updateProfile(profile: T_profile, tags?: T_tags) {
     if (!this.walletAddr) throw Error('Method connect() should be called before updateProfile().');
     if (!this.data.isProfile(profile))
       throw Error(
@@ -60,6 +60,8 @@ export default class Account {
     const tx = await this.arweave.createTransaction({ data });
     tx.addTag('Protocol-Name', PROTOCOL_NAME[PROTOCOL_NAME.length - 1]);
     tx.addTag('handle', profile.handleName);
+    if(tags)
+      tags.filter((tag) => tag.name !== 'Protocol-Name' && tag.name !== 'handle').map((tag) => tx.addTag(tag.name, tag.value));
 
     let result = tx;
     try {

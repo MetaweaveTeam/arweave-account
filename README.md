@@ -111,9 +111,11 @@ If no argument is passed, account will use the injected `arweaveWallet` object. 
 
 __Create/update arweave account profile__
 ```typescript
-await account.updateProfile(profileObj);
+await account.updateProfile(profileObj, tags?);
 ```
 Make sure `connect()` is called before.
+
+> ℹ️ Optionaly you can pass an array of `tags` to be added to the transaction. This is useful if you want to attach [Asset Discoverability (ANS-110)](https://specs.g8way.io/?tx=SYHBhGAmBo6fgAkINNoRtumOzxNB8-JFv2tPhBuNk5c) or even a [Stampable Asset](https://specs.g8way.io/#/view/y_ykD1T51BAM1Q2PrJK5bjZt9gf53EFMBW8nv3ooHj4).
 
 ## Example: Update user's handle name and bio
 

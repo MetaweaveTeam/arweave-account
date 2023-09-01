@@ -63,4 +63,6 @@ type T_item = {
   account: ArAccount | null;
 };
 
-export type { T_addr, T_txid, T_profile, ArAccount, T_item, ArAccountEncoded };
+type T_tags = {name: string, value: string}[];
+
+export type { T_addr, T_txid, T_profile, ArAccount, T_item, ArAccountEncoded, T_tags };
