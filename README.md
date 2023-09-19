@@ -58,6 +58,17 @@ const account = new Account();
 
 If you are using Typescript, see [_typescript imports_](#typescript-imports) section.
 
+__Optional object initializer__
+
+In some cases, you may want to pass an object to the constructor to customize the library behavior. Here is the list of available options:
+
+| Property name | Default value | description |
+| ------------- | ------------- | ----------- |
+| cacheIsActivated | `true` | If `true`, the library will cache the latest account data for each wallet address. This is useful to avoid unnecessary requests to the gateway. |
+| cacheSize | `100` | The maximum number of cached account data. |
+| cacheTime | `60000` | The time in milliseconds before the cache is invalidated. |
+| gateway | `{ host: 'arweave.net',  port: 443,  protocol: 'https',  timeout: 20000, logging: false }` | The gateway used to fetch account data. |
+
 ## Basic usages
 
 __Get user profile by wallet address__
