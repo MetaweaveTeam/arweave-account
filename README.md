@@ -22,7 +22,7 @@ Here is some example of the same profile displayed by different applications in 
 
 # Documentation
 
-> ℹ️ If it's your first time trying `arweave-account`, __we recommend to try the [interactive documentation](https://account.metaweave.xyz)__.
+> ℹ️ If it's your first time trying `arweave-account`, __we recommend to try the [interactive documentation](https://arprofile.org)__.
 
 If you're in for a deeper look at arweave account, you are at the right place
 
