@@ -7,7 +7,7 @@ import block from 'ardb/lib/models/block';
 import Cache from './Cache';
 import { JWKInterface } from 'arweave/node/lib/wallet';
 import Data from './data';
-import { PROTOCOL_NAME } from './config';
+import { PROTOCOL_NAME, set_DEFAULT_AVATAR_URI, set_DEFAULT_BANNER_URI } from './config';
 
 export { ArAccount, T_profile as ArProfile };
 
@@ -29,10 +29,15 @@ export default class Account {
       timeout: 20000, // Network request timeouts in milliseconds
       logging: false,
     },
+    defaultAvatarUri = "ar://OrG-ZG2WN3wdcwvpjz1ihPe4MI24QBJUpsJGIdL85wA",
+    defaultBannerUri = "ar://a0ieiziq2JkYhWamlrUCHxrGYnHWUAMcONxRmfkWt-k"
   } = {}) {
     this.arweave = Arweave.init(gateway);
     this.ardb = new ArDB(this.arweave);
     this.data = new Data(gateway);
+
+    set_DEFAULT_AVATAR_URI(defaultAvatarUri);
+    set_DEFAULT_BANNER_URI(defaultBannerUri);
 
     if (cacheIsActivated) {
       if (typeof window !== 'undefined') {
