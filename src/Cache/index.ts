@@ -8,12 +8,10 @@ export default class Cache implements CacheAPI {
   private cacheObj: { [K: string]: () => any } | CacheAPI;
   private size: number;
   private expirationTime: number;
-  private gatewayConfig: GatewayConfig;
 
-  constructor(env: string | CacheAPI, size: number, expirationTime: number, gatewayConfig:GatewayConfig) {
+  constructor(env: string | CacheAPI, size: number, expirationTime: number) {
     this.size = size;
     this.expirationTime = expirationTime;
-    this.gatewayConfig = gatewayConfig;
 
     if (typeof env === 'object') this.cacheObj = env;
     else if (this.select[env]) this.cacheObj = this.select[env]();
@@ -22,8 +20,8 @@ export default class Cache implements CacheAPI {
 
   // Environments list
   private select: { [K: string]: () => any } = {
-    web: () => new LocalStorage(this.size, this.expirationTime, this.gatewayConfig),
-    node: () => new Memory(this.size, this.expirationTime, this.gatewayConfig),
+    web: () => new LocalStorage(this.size, this.expirationTime),
+    node: () => new Memory(this.size, this.expirationTime),
   };
 
   public get = (addr: string): ArAccount | undefined => this.cacheObj.get(addr);

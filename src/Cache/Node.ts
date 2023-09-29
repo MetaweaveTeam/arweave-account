@@ -7,12 +7,10 @@ export default class Memory implements CacheAPI {
   private store: Map<string, T_item> = new Map<string, T_item>();
   private expirationTime: number;
   private size: number;
-  private data: Data;
 
-  constructor(size: number, expirationTime: number, gatewayConfig: GatewayConfig) {
+  constructor(size: number, expirationTime: number) {
     this.expirationTime = expirationTime;
     this.size = size;
-    this.data = new Data(gatewayConfig);
   }
 
   get(addr: T_addr) {
@@ -22,7 +20,7 @@ export default class Memory implements CacheAPI {
       if(result)
         return result;
       else if(result === null)
-        return this.data.getDefaultAccount(addr);
+        return Data.getDefaultAccount(addr);
     }
   }
 

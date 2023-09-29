@@ -6,12 +6,10 @@ import Data from '../data';
 export default class LocalStorage implements Cache {
   private expirationTime: number;
   private size: number;
-  private data: Data;
 
-  constructor(size: number, expirationTime: number, gatewayConfig: GatewayConfig) {
+  constructor(size: number, expirationTime: number) {
     this.expirationTime = expirationTime;
     this.size = size;
-    this.data = new Data(gatewayConfig);
 
     if (!localStorage.getItem('arweave-account')) localStorage.setItem('arweave-account', '[]');
   }
@@ -25,7 +23,7 @@ export default class LocalStorage implements Cache {
     if(result)
       return result;
     else if(result === null)
-      return this.data.getDefaultAccount(addr);
+      return Data.getDefaultAccount(addr);
   }
 
   find(uniqueHandle: string) {

@@ -7,14 +7,13 @@ import block from 'ardb/lib/models/block';
 import Cache from './Cache';
 import { JWKInterface } from 'arweave/node/lib/wallet';
 import Data from './data';
-import { PROTOCOL_NAME, set_DEFAULT_AVATAR_URI, set_DEFAULT_BANNER_URI } from './config';
+import Config from './config';
 
 export { ArAccount, T_profile as ArProfile };
 
 export default class Account {
   private arweave: Arweave;
   private ardb: ArDB;
-  private data: Data;
   private cache: Cache | null;
   private walletAddr: string | null = null;
 
@@ -32,17 +31,14 @@ export default class Account {
     defaultAvatarUri = "ar://OrG-ZG2WN3wdcwvpjz1ihPe4MI24QBJUpsJGIdL85wA",
     defaultBannerUri = "ar://a0ieiziq2JkYhWamlrUCHxrGYnHWUAMcONxRmfkWt-k"
   } = {}) {
+    new Config(gateway, defaultAvatarUri, defaultBannerUri);
     this.arweave = Arweave.init(gateway);
     this.ardb = new ArDB(this.arweave);
-    this.data = new Data(gateway);
-
-    set_DEFAULT_AVATAR_URI(defaultAvatarUri);
-    set_DEFAULT_BANNER_URI(defaultBannerUri);
 
     if (cacheIsActivated) {
       if (typeof window !== 'undefined') {
-        this.cache = new Cache('web', cacheSize, cacheTime, gateway);
-      } else this.cache = new Cache('node', cacheSize, cacheTime, gateway);
+        this.cache = new Cache('web', cacheSize, cacheTime);
+      } else this.cache = new Cache('node', cacheSize, cacheTime);
     } else this.cache = null;
   }
 
@@ -52,18 +48,18 @@ export default class Account {
 
   async updateProfile(profile: T_profile, tags?: T_tags) {
     if (!this.walletAddr) throw Error('Method connect() should be called before updateProfile().');
-    if (!this.data.isProfile(profile))
+    if (!Data.isProfile(profile))
       throw Error(
         `Object "${JSON.stringify(
           profile,
         )}" doesn't match with the shape of a T_profile object.\nTypescript tip: import { T_profile } from 'arweave-account'`,
       );
 
-    const encodedAccount = this.data.encode(profile);
+    const encodedAccount = Data.encode(profile);
     const data = JSON.stringify(encodedAccount);
 
     const tx = await this.arweave.createTransaction({ data });
-    tx.addTag('Protocol-Name', PROTOCOL_NAME[PROTOCOL_NAME.length - 1]);
+    tx.addTag('Protocol-Name', Config.PROTOCOL_NAME[Config.PROTOCOL_NAME.length - 1]);
     tx.addTag('handle', profile.handleName);
     if(tags)
       tags.filter((tag) => tag.name !== 'Protocol-Name' && tag.name !== 'handle').map((tag) => tx.addTag(tag.name, tag.value));
@@ -84,7 +80,7 @@ export default class Account {
     }
 
     if (encodedAccount) {
-      const accountObj = this.data.decode(tx.id, this.walletAddr, encodedAccount);
+      const accountObj = Data.decode(tx.id, this.walletAddr, encodedAccount);
       this.cache?.hydrate(this.walletAddr, accountObj);
     }
 
@@ -100,7 +96,7 @@ export default class Account {
       const tx: transaction[] | block[] = await this.ardb
         .search('transactions')
         .exclude('anchor')
-        .tag('Protocol-Name', PROTOCOL_NAME)
+        .tag('Protocol-Name', Config.PROTOCOL_NAME)
         .from(addr)
         .limit(1)
         .find();
@@ -109,12 +105,12 @@ export default class Account {
 
       try {
         const { data } = txid ? await this.arweave.api.get(txid) : { data: null };
-        const accountObj = this.data.decode(txid, addr, data);
+        const accountObj = Data.decode(txid, addr, data);
         this.cache?.hydrate(addr, accountObj);
         return accountObj;
       } catch (e) {
         // if JSON.parse(data) throw an error because data is not a valid JSON
-        return this.data.getDefaultAccount(addr);
+        return Data.getDefaultAccount(addr);
       }
     }
   }
@@ -123,7 +119,7 @@ export default class Account {
     const txs: transaction[] | block[] = await this.ardb
       .search('transactions')
       .exclude('anchor')
-      .tag('Protocol-Name', PROTOCOL_NAME)
+      .tag('Protocol-Name', Config.PROTOCOL_NAME)
       .tag('handle', handle)
       .limit(100)
       .find();
@@ -134,12 +130,12 @@ export default class Account {
 
       try {
         const { data } = await this.arweave.api.get(txid);
-        const accountObj = this.data.decode(txid, addr, data);
+        const accountObj = Data.decode(txid, addr, data);
         this.cache?.hydrate(addr, accountObj);
         return accountObj;
       } catch (e) {
         // if JSON.parse(data) throw an error because data is not a valid JSON
-        return this.data.getDefaultAccount(addr);
+        return Data.getDefaultAccount(addr);
       }
     });
 
@@ -164,7 +160,7 @@ export default class Account {
       const txs: transaction[] | block[] = await this.ardb
         .search('transactions')
         .exclude('anchor')
-        .tag('Protocol-Name', PROTOCOL_NAME)
+        .tag('Protocol-Name', Config.PROTOCOL_NAME)
         .tag('handle', uniqueHandle.slice(0, -7))
         .limit(100)
         .find();
@@ -175,12 +171,12 @@ export default class Account {
 
         try {
           const { data } = await this.arweave.api.get(txid);
-          const accountObj = this.data.decode(txid, addr, data);
+          const accountObj = Data.decode(txid, addr, data);
           this.cache?.hydrate(addr, accountObj);
           return accountObj;
         } catch (e) {
           // if JSON.parse(data) throw an error because data is not a valid JSON
-          return this.data.getDefaultAccount(addr);
+          return Data.getDefaultAccount(addr);
         }
       });
 
