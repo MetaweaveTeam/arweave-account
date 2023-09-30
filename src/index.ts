@@ -8,6 +8,7 @@ import Cache from './Cache';
 import { JWKInterface } from 'arweave/node/lib/wallet';
 import Data from './data';
 import Config from './config';
+import { PROTOCOL_NAMES } from './constants';
 
 export { ArAccount, T_profile as ArProfile };
 
@@ -55,11 +56,11 @@ export default class Account {
         )}" doesn't match with the shape of a T_profile object.\nTypescript tip: import { T_profile } from 'arweave-account'`,
       );
 
-    const encodedAccount = Data.encode(profile);
+    const encodedAccount = Data.encodeForStorage(profile);
     const data = JSON.stringify(encodedAccount);
 
     const tx = await this.arweave.createTransaction({ data });
-    tx.addTag('Protocol-Name', Config.PROTOCOL_NAME[Config.PROTOCOL_NAME.length - 1]);
+    tx.addTag('Protocol-Name', PROTOCOL_NAMES[PROTOCOL_NAMES.length - 1]);
     tx.addTag('handle', profile.handleName);
     if(tags)
       tags.filter((tag) => tag.name !== 'Protocol-Name' && tag.name !== 'handle').map((tag) => tx.addTag(tag.name, tag.value));
@@ -96,7 +97,7 @@ export default class Account {
       const tx: transaction[] | block[] = await this.ardb
         .search('transactions')
         .exclude('anchor')
-        .tag('Protocol-Name', Config.PROTOCOL_NAME)
+        .tag('Protocol-Name', PROTOCOL_NAMES)
         .from(addr)
         .limit(1)
         .find();
@@ -119,7 +120,7 @@ export default class Account {
     const txs: transaction[] | block[] = await this.ardb
       .search('transactions')
       .exclude('anchor')
-      .tag('Protocol-Name', Config.PROTOCOL_NAME)
+      .tag('Protocol-Name', PROTOCOL_NAMES)
       .tag('handle', handle)
       .limit(100)
       .find();
@@ -165,7 +166,7 @@ export default class Account {
       const txs: transaction[] | block[] = await this.ardb
         .search('transactions')
         .exclude('anchor')
-        .tag('Protocol-Name', Config.PROTOCOL_NAME)
+        .tag('Protocol-Name', PROTOCOL_NAMES)
         .tag('handle', uniqueHandle.slice(0, -7))
         .limit(100)
         .find();
