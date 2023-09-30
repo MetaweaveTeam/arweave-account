@@ -68,6 +68,8 @@ In some cases, you may want to pass an object to the constructor to customize th
 | cacheSize | `100` | The maximum number of cached account data. |
 | cacheTime | `60000` | The time in milliseconds before the cache is invalidated. |
 | gateway | `{ host: 'arweave.net',  port: 443,  protocol: 'https',  timeout: 20000, logging: false }` | The gateway used to fetch account data. |
+| defaultAvatarUri | `"ar://OrG-ZG2WN3wdcwvpjz1ihPe4MI24QBJUpsJGIdL85wA"` | The default avatar URI used when user has no avatar set. |
+| defaultBannerUri | `"ar://a0ieiziq2JkYhWamlrUCHxrGYnHWUAMcONxRmfkWt-k"` | The default banner URI used when user has no banner set. |
 
 ## Basic usages
 

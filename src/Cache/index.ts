@@ -1,6 +1,5 @@
 import CacheAPI from './CacheAPI';
 import { ArAccount, T_addr } from '../types';
-import { ApiConfig as GatewayConfig } from 'arweave/node/lib/api';
 import LocalStorage from './Web';
 import Memory from './Node';
 
