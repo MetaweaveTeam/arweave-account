@@ -30,11 +30,11 @@ export default class Memory implements CacheAPI {
     }
   }
 
-  hydrate(addr: T_addr, account?: ArAccount) {
+  hydrate(account: ArAccount) {
     const item: T_item = {
       timestamp: Date.now(),
-      addr,
-      account: account ? account : null,
+      addr: account.addr,
+      account
     };
 
     // add or hydrate account data

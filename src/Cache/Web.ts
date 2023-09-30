@@ -38,11 +38,11 @@ export default class LocalStorage implements Cache {
   /*
    *  add or update an account timestamp
    */
-  hydrate(addr: T_addr, account: ArAccount): void {
+  hydrate(account: ArAccount): void {
     const item: T_item = {
       timestamp: Date.now(),
-      addr,
-      account: account ? account : null,
+      addr: account.addr,
+      account
     };
 
     // @ts-ignore localStorage is initialized in constructor

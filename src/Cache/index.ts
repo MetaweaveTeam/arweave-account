@@ -1,5 +1,5 @@
 import CacheAPI from './CacheAPI';
-import { ArAccount, T_addr } from '../types';
+import { ArAccount } from '../types';
 import LocalStorage from './Web';
 import Memory from './Node';
 
@@ -25,7 +25,7 @@ export default class Cache implements CacheAPI {
 
   public get = (addr: string): ArAccount | undefined => this.cacheObj.get(addr);
   public find = (uniqueHandle: string): ArAccount | null | undefined => this.cacheObj.find(uniqueHandle);
-  public hydrate = (addr: T_addr, account: ArAccount) => this.cacheObj.hydrate(addr, account);
+  public hydrate = (account: ArAccount) => this.cacheObj.hydrate(account);
   public reset = () => this.cacheObj.reset();
   public dump = () => this.cacheObj.dump();
 }

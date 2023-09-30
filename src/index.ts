@@ -80,8 +80,8 @@ export default class Account {
     }
 
     if (encodedAccount) {
-      const accountObj = Data.decode(result.id, this.walletAddr, encodedAccount);
-      this.cache?.hydrate(this.walletAddr, accountObj);
+      const account = Data.decode(result.id, this.walletAddr, encodedAccount);
+      this.cache?.hydrate(account);
     }
 
     return result;
@@ -100,14 +100,14 @@ export default class Account {
         .from(addr)
         .limit(1)
         .find();
-        
+
       const txid: T_txid | null = tx[0] ? tx[0].id : null;
 
       try {
         const { data } = txid ? await this.arweave.api.get(txid) : { data: null };
-        const accountObj = Data.decode(txid, addr, data);
-        this.cache?.hydrate(addr, accountObj);
-        return accountObj;
+        const account = Data.decode(txid, addr, data);
+        this.cache?.hydrate(account);
+        return account;
       } catch (e) {
         // if JSON.parse(data) throw an error because data is not a valid JSON
         return Data.getDefaultAccount(addr);
@@ -145,7 +145,11 @@ export default class Account {
         a.findIndex((t) => t?.addr === v?.addr) === i,
     );
 
-    accounts.forEach((ac) => this.cache?.hydrate(ac.addr, ac));
+    /*
+     * It appears that some accounts found are not the latest txid related to it.
+     * Until this bug is solved the caching hydration is disabled.
+     */
+    // accounts.forEach((ac) => this.cache?.hydrate(ac.addr, ac));
 
     return accounts;
   }
@@ -181,11 +185,11 @@ export default class Account {
 
       const accounts = formattedAccounts.filter((e): e is ArAccount => e !== undefined);
 
-      const result = accounts.find((ac) => ac.handle.includes(uniqueHandle));
+      const account = accounts.find((ac) => ac.handle.includes(uniqueHandle));
 
-      if(result){
-        this.cache?.hydrate(result.addr, result)
-        return result;
+      if(account){
+        this.cache?.hydrate(account)
+        return account;
       }
       else
         return null;
