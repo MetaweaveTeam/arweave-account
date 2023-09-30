@@ -80,7 +80,7 @@ export default class Account {
     }
 
     if (encodedAccount) {
-      const accountObj = Data.decode(tx.id, this.walletAddr, encodedAccount);
+      const accountObj = Data.decode(result.id, this.walletAddr, encodedAccount);
       this.cache?.hydrate(this.walletAddr, accountObj);
     }
 
@@ -100,7 +100,7 @@ export default class Account {
         .from(addr)
         .limit(1)
         .find();
-
+        
       const txid: T_txid | null = tx[0] ? tx[0].id : null;
 
       try {
@@ -124,29 +124,30 @@ export default class Account {
       .limit(100)
       .find();
 
-    const formattedAccounts = txs.map(async (tx) => {
+    const formattedAccounts = await Promise.all(txs.map(async (tx) => {
       const txid: T_txid = tx.id;
       const addr = 'owner' in tx ? tx.owner.address : 'anonymous';
 
       try {
         const { data } = await this.arweave.api.get(txid);
         const accountObj = Data.decode(txid, addr, data);
-        this.cache?.hydrate(addr, accountObj);
         return accountObj;
       } catch (e) {
-        // if JSON.parse(data) throw an error because data is not a valid JSON
+        // if uploaded JSON data is not a valid JSON
         return Data.getDefaultAccount(addr);
       }
-    });
+    }));
 
-    const accounts = await Promise.all(formattedAccounts);
-
-    return accounts.filter(
+    const accounts = formattedAccounts.filter(
       (v, i, a): v is ArAccount =>
         v !== null &&
         // remove address duplicates: https://stackoverflow.com/a/56757215
         a.findIndex((t) => t?.addr === v?.addr) === i,
     );
+
+    accounts.forEach((ac) => this.cache?.hydrate(ac.addr, ac));
+
+    return accounts;
   }
 
   async find(uniqueHandle: string): Promise<ArAccount | null> {
@@ -165,28 +166,29 @@ export default class Account {
         .limit(100)
         .find();
 
-      const formattedAccounts = txs.map(async (tx) => {
+      const formattedAccounts = await Promise.all(txs.map(async (tx) => {
         const txid: T_txid = tx.id;
         const addr = 'owner' in tx ? tx.owner.address : 'anonymous';
 
         try {
           const { data } = await this.arweave.api.get(txid);
-          const accountObj = Data.decode(txid, addr, data);
-          this.cache?.hydrate(addr, accountObj);
-          return accountObj;
+          return Data.decode(txid, addr, data);
         } catch (e) {
           // if JSON.parse(data) throw an error because data is not a valid JSON
           return Data.getDefaultAccount(addr);
         }
-      });
+      }));
 
-      const a = await Promise.all(formattedAccounts);
-      const accounts = a.filter((e): e is ArAccount => e !== undefined);
-      accounts.forEach((ac) => {
-        this.cache?.hydrate(ac.addr, ac);
-      });
+      const accounts = formattedAccounts.filter((e): e is ArAccount => e !== undefined);
+
       const result = accounts.find((ac) => ac.handle.includes(uniqueHandle));
-      return result || null;
+
+      if(result){
+        this.cache?.hydrate(result.addr, result)
+        return result;
+      }
+      else
+        return null;
     }
   }
 

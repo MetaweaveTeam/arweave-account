@@ -25,7 +25,7 @@ export default class Cache implements CacheAPI {
 
   public get = (addr: string): ArAccount | undefined => this.cacheObj.get(addr);
   public find = (uniqueHandle: string): ArAccount | null | undefined => this.cacheObj.find(uniqueHandle);
-  public hydrate = (addr: T_addr, account?: ArAccount) => this.cacheObj.hydrate(addr, account);
+  public hydrate = (addr: T_addr, account: ArAccount) => this.cacheObj.hydrate(addr, account);
   public reset = () => this.cacheObj.reset();
   public dump = () => this.cacheObj.dump();
 }
