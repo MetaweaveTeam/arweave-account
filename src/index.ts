@@ -35,12 +35,7 @@ export default class Account {
     new Config(gateway, defaultAvatarUri, defaultBannerUri);
     this.arweave = Arweave.init(gateway);
     this.ardb = new ArDB(this.arweave);
-
-    if (cacheIsActivated) {
-      if (typeof window !== 'undefined') {
-        this.cache = new Cache('web', cacheSize, cacheTime);
-      } else this.cache = new Cache('node', cacheSize, cacheTime);
-    } else this.cache = null;
+    this.cache = cacheIsActivated ? new Cache(cacheSize, cacheTime) : null;
   }
 
   async connect(jwk: JWKInterface | 'use_wallet' = 'use_wallet') {
