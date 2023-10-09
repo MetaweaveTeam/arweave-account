@@ -1,14 +1,14 @@
 import { T_item, ArAccount, T_addr } from '../types';
-import Cache from './CacheAPI';
+import { ICache } from '.';
 import Data from '../data';
 
-export default class LocalStorage implements Cache {
-  private expirationTime: number;
-  private size: number;
+export default class LocalStorage implements ICache {
+  expirationTime: number;
+  size: number;
 
   constructor(size: number, expirationTime: number) {
+    this.size = size; 
     this.expirationTime = expirationTime;
-    this.size = size;
 
     if (!localStorage.getItem('arweave-account')) localStorage.setItem('arweave-account', '[]');
   }
@@ -66,8 +66,8 @@ export default class LocalStorage implements Cache {
   reset() {
     localStorage.setItem('arweave-account', '[]');
   }
-  dump(): string {
+  dump() {
     // @ts-ignore localStorage is initialized in constructor
-    return localStorage.getItem('arweave-account');
+    return localStorage.getItem('arweave-account') || "";
   }
 }

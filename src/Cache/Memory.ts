@@ -1,15 +1,12 @@
 import { ArAccount, T_addr, T_item } from '../types';
-import CacheAPI from './CacheAPI';
+import LocalStorage from './LocalStorage';
 import Data from '../data';
 
-export default class Memory implements CacheAPI {
+export default class Memory extends LocalStorage {
   private store: Map<string, T_item> = new Map<string, T_item>();
-  private expirationTime: number;
-  private size: number;
 
   constructor(size: number, expirationTime: number) {
-    this.expirationTime = expirationTime;
-    this.size = size;
+    super(size, expirationTime);
   }
 
   get(addr: T_addr) {
@@ -47,6 +44,6 @@ export default class Memory implements CacheAPI {
     this.store.clear();
   }
   dump() {
-    return this.store;
+    return JSON.stringify(this.store);
   }
 }

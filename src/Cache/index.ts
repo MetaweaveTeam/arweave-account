@@ -1,26 +1,24 @@
-import CacheAPI from './CacheAPI';
-import { ArAccount } from '../types';
-import LocalStorage from './Web';
-import Memory from './Node';
+import { ArAccount, T_addr, T_item } from '../types';
+import LocalStorage from './LocalStorage';
+import Memory from './Memory';
 
-export default class Cache implements CacheAPI {
-  private cacheObj: CacheAPI;
-  private size: number;
-  private expirationTime: number;
+export interface ICache {
+  expirationTime: number;
+  size: number;
 
-  constructor(size: number, expirationTime: number) {
-    this.size = size;
-    this.expirationTime = expirationTime;
+  get(addr: T_addr): ArAccount | undefined;
+  find(uniqueHandle: string): ArAccount | null | undefined;
+  hydrate(account: ArAccount): void;
 
-    if (typeof window !== 'undefined')
-      this.cacheObj = new LocalStorage(this.size, this.expirationTime);
-    else
-      this.cacheObj = new Memory(this.size, this.expirationTime);
+  // dev/debug purpose only
+  reset(): void;
+  dump(): string;
+}
+
+export class Cache {
+  static create(size: number, expirationTime: number): ICache {
+    return typeof window !== 'undefined'
+      ? new LocalStorage(size, expirationTime)  // web browser runtime environment
+      : new Memory(size, expirationTime);       // nodejs runtime environment
   }
-
-  public get = (addr: string): ArAccount | undefined => this.cacheObj.get(addr);
-  public find = (uniqueHandle: string): ArAccount | null | undefined => this.cacheObj.find(uniqueHandle);
-  public hydrate = (account: ArAccount) => this.cacheObj.hydrate(account);
-  public reset = () => this.cacheObj.reset();
-  public dump = () => this.cacheObj.dump();
 }

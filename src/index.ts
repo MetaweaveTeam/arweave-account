@@ -4,7 +4,7 @@ import ArDB from 'ardb';
 import { ArAccount, T_addr, T_profile, T_tags, T_txid } from './types';
 import transaction from 'ardb/lib/models/transaction';
 import block from 'ardb/lib/models/block';
-import Cache from './Cache';
+import { Cache, ICache } from './Cache';
 import { JWKInterface } from 'arweave/node/lib/wallet';
 import Data from './data';
 import Config from './config';
@@ -15,7 +15,7 @@ export { ArAccount, T_profile as ArProfile };
 export default class Account {
   private arweave: Arweave;
   private ardb: ArDB;
-  private cache: Cache | null;
+  private cache: ICache | null;
   private walletAddr: string | null = null;
 
   constructor({
@@ -35,7 +35,7 @@ export default class Account {
     new Config(gateway, defaultAvatarUri, defaultBannerUri);
     this.arweave = Arweave.init(gateway);
     this.ardb = new ArDB(this.arweave);
-    this.cache = cacheIsActivated ? new Cache(cacheSize, cacheTime) : null;
+    this.cache = cacheIsActivated ? Cache.create(cacheSize, cacheTime) : null;
   }
 
   async connect(jwk: JWKInterface | 'use_wallet' = 'use_wallet') {
