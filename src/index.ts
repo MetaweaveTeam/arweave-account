@@ -13,6 +13,8 @@ import { PROTOCOL_NAMES } from './constants';
 export { ArAccount, T_profile as ArProfile };
 
 export default class Account {
+  static instance: Account;
+
   private arweave: Arweave;
   private ardb: ArDB;
   private cache: ICache | null;
@@ -36,6 +38,9 @@ export default class Account {
     this.arweave = Arweave.init(gateway);
     this.ardb = new ArDB(this.arweave);
     this.cache = cacheIsActivated ? Cache.create(cacheSize, cacheTime) : null;
+
+    if (Account.instance) return Account.instance;
+    Account.instance = this;
   }
 
   async connect(jwk: JWKInterface | 'use_wallet' = 'use_wallet') {
