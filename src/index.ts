@@ -4,7 +4,7 @@ import ArDB from 'ardb';
 import { ArAccount, T_addr, T_profile, T_tags, T_txid } from './types';
 import transaction from 'ardb/lib/models/transaction';
 import block from 'ardb/lib/models/block';
-import { Cache, ICache } from './Cache';
+import Cache, { ICache } from './Cache';
 import { JWKInterface } from 'arweave/node/lib/wallet';
 import Data from './data';
 import Config from './config';

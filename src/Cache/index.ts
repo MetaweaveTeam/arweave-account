@@ -15,7 +15,7 @@ export interface ICache {
   dump(): string;
 }
 
-export class Cache {
+export default class Cache {
   static create(size: number, expirationTime: number): ICache {
     return typeof window !== 'undefined'
       ? new LocalStorage(size, expirationTime)  // web browser runtime environment
