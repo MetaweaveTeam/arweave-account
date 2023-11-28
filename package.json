@@ -12,6 +12,8 @@
     "test": "uvu -r tsm -r node-localstorage/register tests",
     "build": "tsc",
     "build:browser": "npx browserify -r ./lib/index.js:Account > dist/bundle.js",
+    "build:docs": "npx docsify-cli generate docs",
+    "docs": "npx docsify-cli serve docs",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
     "lint": "tslint -p tsconfig.json"
   },
@@ -30,6 +32,7 @@
   },
   "homepage": "https://github.com/MetaweaveTeam/arweave-account#readme",
   "devDependencies": {
+    "docsify-cli": "^4.4.4",
     "nock": "^13.2.4",
     "node-localstorage": "^2.2.1",
     "prettier": "^2.5.1",
