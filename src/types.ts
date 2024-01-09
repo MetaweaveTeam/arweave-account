@@ -31,7 +31,17 @@ type T_profile = {
     twitch?: string;
   };
   wallets: {
-    eth?: string;
+    eth?: {
+      address: string;
+      auth?: {
+        litAuthSig?: { // IAW https://lit-protocol.github.io/lit-js-sdk/api_docs_html/#authsig
+          sig: string;
+          derivedVia: string;
+          signedMessage: string;
+          address: string;
+        }
+      }
+    }
   }
 };
 
@@ -53,7 +63,17 @@ type ArAccountEncoded = {
     twitch?: string;
   };
   wallets?: {
-    eth?: string;
+    eth?: {
+      address: string;
+      auth?: {
+        litAuthSig?: { // IAW https://lit-protocol.github.io/lit-js-sdk/api_docs_html/#authsig
+          sig: string;
+          derivedVia: string;
+          signedMessage: string;
+          address: string;
+        }
+      }
+    }
   }
 }
 
